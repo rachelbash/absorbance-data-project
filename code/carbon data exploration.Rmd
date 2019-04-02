@@ -1,0 +1,37 @@
+---
+title: "carbon data exploration"
+author: "Rachel Bash"
+date: "4/2/2019"
+output: pdf_document
+geometry: margin=2.54cm
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data Exploration of Raw Carbon Data
+
+
+```{r}
+getwd()
+
+#load all required packages
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+
+# Set ggplot theme
+
+
+```
+
+
+
+```{r}
+#import data
+carbon.data <- read.csv("./raw-data/NTL-LTER_Lake_Carbon_Raw.csv")
+```
+
