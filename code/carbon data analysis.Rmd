@@ -1,0 +1,43 @@
+---
+title: "carbon data analysis"
+author: "Rachel Bash"
+date: "4/5/2019"
+output: pdf_document
+geometry: margin=2.54cm
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Carbon Data Wrangling and Analysis
+
+
+```{r}
+getwd()
+
+#load all required packages
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+
+# Set ggplot theme
+
+
+```
+
+```{r}
+#import data
+carbon.data.processed <- read.csv("./processed-data/NTL-LTER_Carbon_Data_Processed.csv")
+
+#View data
+#View(carbon.data)
+
+#set date
+carbon.data.processed$sampledate <- as.Date(carbon.data.processed$sampledate, format = "%m/%d/%y")
+class(carbon.data.processed$sampledate)
+
+```
+

@@ -19,17 +19,7 @@ From the Data homepage, the following selections were made:
 * Cascade (NTL Categories)
 * Cascade Project at North Temperate Lakes LTER Core Data Carbon 1984 - 2016
 
-AND
-
-* Cascade Project at North Temperate Lakes LTER Core Data Nutrients 1991 - 2016
-
-AND
-
-* Cascade Project at North Temperate Lakes LTER Core Data Physical and Chemical Limnology 1984 - 2016
-* On each of the three pages, Download All Data (csv) was chosen.
-
-
-csv files were saved as `NTL-LTER_Lake_Carbon_Raw.csv`, `NTL-LTER_Lake_ChemistryPhysics_Raw.csv`, and `NTL-LTER_Lake_Nutrients_Raw.csv`. 
+csv file was saved as `NTL-LTER_Lake_Carbon_Raw.csv`.
 
 Data were accessed 2018-12-06.
 
