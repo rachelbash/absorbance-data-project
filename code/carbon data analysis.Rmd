@@ -22,10 +22,15 @@ getwd()
 library(tidyverse)
 library(dplyr)
 library(lubridate)
+library(FSA)
+library(corrplot)
 
 # Set ggplot theme
 
-
+Rachel_theme <- theme_bw(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "right")
+theme_set(Rachel_theme)
 ```
 
 ```{r}
@@ -39,5 +44,46 @@ carbon.data.processed <- read.csv("./processed-data/NTL-LTER_Carbon_Data_Process
 carbon.data.processed$sampledate <- as.Date(carbon.data.processed$sampledate, format = "%m/%d/%y")
 class(carbon.data.processed$sampledate)
 
+```
+
+
+```{r}
+#test to see whether there is a significant difference in absorbance values across lakes
+
+#first, test for normality
+shapiro.test(carbon.data.processed$absorbance[carbon.data.processed$lakename == "Tuesday Lake"])
+shapiro.test(carbon.data.processed$absorbance[carbon.data.processed$lakename == "Paul Lake"])
+shapiro.test(carbon.data.processed$absorbance[carbon.data.processed$lakename == "Peter Lake"])
+shapiro.test(carbon.data.processed$absorbance[carbon.data.processed$lakename == "East Long Lake"])
+shapiro.test(carbon.data.processed$absorbance[carbon.data.processed$lakename == "West Long Lake"])
+#result: all have significant p-values, meaning they are not normally distributed data (as anticipated)
+
+#bartlett test to determine whether there is equal variance between groups
+bartlett.test(carbon.data.processed$absorbance ~ carbon.data.processed$lakename) 
+#result: not equal variances, not great
+
+#used non-parametric test to determine whether lakes vary significantly in their absorbance values
+kruskal.test(carbon.data.processed$absorbance ~ carbon.data.processed$lakename)#lakename is a significant predictor of absorbance
+
+#post-hoc non-parametric test
+dunnTest(carbon.data.processed$absorbance ~ carbon.data.processed$lakename) #shows all lakes differ from one another significantly 
+
+
+```
+
+```{r}
+#visualize data
+ggplot(carbon.data.processed, aes(x=lakename, y = absorbance)) +
+  geom_violin(draw_quantiles = 0.5)
+```
+
+```{r}
+#correlation plot
+carbon.data.processed.naomit <- carbon.data.processed %>% 
+  select(DIC_uM:absorbance) %>%
+  na.omit()
+
+carbonCorr <- cor(carbon.data.processed.naomit)
+corrplot.mixed(carbonCorr, upper = "ellipse")
 ```
 

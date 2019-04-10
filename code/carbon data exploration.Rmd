@@ -61,16 +61,20 @@ ggplot(carbon.data) +
   geom_freqpoly(aes(x=absorbance, color = depth)) #shows absorbance differences depending on depth in lake
 
 ggplot(carbon.data) +
-  geom_point(aes(x = absorbance, y = doc))
+  geom_point(aes(x = absorbance, y = doc)) #absorbance and doc positively linearly related
 
 ggplot(carbon.data) +
   geom_point(aes(x = depth_id, y = absorbance))
 
 ggplot(carbon.data) +
-  geom_point(aes(x = sampledate, y = absorbance))
+  geom_point(aes(x = sampledate, y = absorbance, color = lakename)) #shows absorbance over time
 
 ggplot(carbon.data) +
-  geom_point(aes(x=depth_id, y = absorbance))
+  geom_point(aes(x = absorbance, y = DIC_uM)) #perhaps a small positive correlation between absorbance and DIC
+
+ggplot(carbon.data.processed) +
+  geom_point(aes(x=depth, y = absorbance, color = lakename)) #shows absorbance by depth and lakename
+
 ```
 
 ```{r}
