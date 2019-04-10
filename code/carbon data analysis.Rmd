@@ -26,6 +26,8 @@ library(FSA)
 library(corrplot)
 library(viridis)
 library(trend)
+library(gridExtra)
+library(grid)
 
 # Set ggplot theme
 
@@ -43,7 +45,7 @@ carbon.data.processed <- read.csv("./processed-data/NTL-LTER_Carbon_Data_Process
 #View(carbon.data)
 
 #set date
-carbon.data.processed$sampledate <- as.Date(carbon.data.processed$sampledate, format = "%m/%d/%y")
+carbon.data.processed$sampledate <- as.Date(carbon.data.processed$sampledate, format = "%Y-%m-%d")
 class(carbon.data.processed$sampledate)
 head(carbon.data.processed$sampledate)
 
@@ -115,6 +117,242 @@ ggplot(carbon.data.processed, aes(x=lakename, y=absorbance)) +
 
 ##Time Series Analysis
 ```{r}
-summary(carbon.data.processed$absorbance)
+
+#Seasonal Mann-Kendall Test
+
+carbon.data.processed.trimmed <- carbon.data.processed %>%
+  filter(depth == "Hypolimnion") %>%
+  select(absorbance, sampledate, lakename) %>%
+  filter(sampledate > as.Date("1996-06-01") & sampledate < as.Date("2016-08-17"))
+
+#visualize data
+ggplot(carbon.data.processed.trimmed, aes(x=sampledate, y=absorbance)) +
+  geom_point(aes(color=lakename))
+
+#interpolate
+carbon.interpolate <- approx(carbon.data.processed.trimmed$absorbance, carbon.data.processed.trimmed$sampledate, method="linear", n=849)
+
+# Turn the interpolated dataset into a proper dataframe
+carbon.interpolate <- do.call(cbind.data.frame, carbon.interpolate)
+names(carbon.interpolate) <- c("Absorbance", "Date")
+carbon.interpolate$Date <- as.Date(carbon.interpolate$Date, 
+                                            origin = "1970/01/01")
+
+# Create a time series object
+carbon.timeseries <- ts(carbon.interpolate$Absorbance, 
+                                start = c(1996, 6) ,frequency = 4)
+carbon.smktest <- smk.test(carbon.timeseries)
+carbon.smktest
+summary(carbon.smktest)
+
+```
+###Split data by Lake
+
+1. East Long Lake
+
+```{r}
+#East Lake
+East.mktest <- filter(carbon.data.processed.trimmed, lakename == "East Long Lake")
+
+#run MK test
+mk.test(East.mktest$absorbance) #p=2e-9, so there is a significant negative trend from beginning to end of data
+
+# Test for change point
+pettitt.test(East.mktest$absorbance) #change point detected at place 30 1998-05-28
+
+#run second MK test for each change point range
+mk.test(East.mktest$absorbance[1:29]) #p=1e-5, significant positive trend in this range
+#test for change point
+pettitt.test(East.mktest$absorbance[1:29]) #change point detected at place 17 1997-06-12
+mk.test(East.mktest$absorbance[1:16]) #no trend
+mk.test(East.mktest$absorbance[17:29]) #no trend
+
+mk.test(East.mktest$absorbance[30:73]) #significant negative trend over time
+pettitt.test(East.mktest$absorbance[30:73]) #change point detected at place 17 (which means place 47 - 1999-06-09)
+mk.test(East.mktest$absorbance[30:46]) #no trend
+mk.test(East.mktest$absorbance[47:73]) #no trend
+
+ggplot(East.mktest, aes(x=sampledate, y=absorbance)) +
+  geom_point() +
+  geom_vline(xintercept=as.Date("1997-06-12")) +
+  geom_vline(xintercept=as.Date("1999-06-09")) +
+  geom_vline(xintercept = as.Date("1998-05-28")) +
+  geom_smooth(method=lm, color="black")
 ```
 
+2. West Long Lake
+
+```{r}
+#split data by lake
+West.mktest <- filter(carbon.data.processed.trimmed, lakename == "West Long Lake")
+
+#run MK test
+mk.test(West.mktest$absorbance) #p is significant, so there is a significant negative trend from beginning to end of data
+
+# Test for change point
+pettitt.test(West.mktest$absorbance) #change point detected at place 44 1998-08-31
+
+#run second MK test for each change point range
+mk.test(West.mktest$absorbance[1:43]) #no trend
+
+mk.test(West.mktest$absorbance[44:87]) #no significant trend in this range
+
+ggplot(West.mktest, aes(x=sampledate, y=absorbance)) +
+  geom_point() +
+  geom_vline(xintercept=as.Date("1998-08-31")) +
+  geom_smooth(method=lm, color = "black")
+  
+```
+
+
+3. Peter Lake
+
+```{r}
+#Peter Lake
+Peter.mktest <- filter(carbon.data.processed.trimmed, lakename == "Peter Lake") %>% na.omit()
+
+#run MK test
+mk.test(Peter.mktest$absorbance) #p val is significant so there is a significant positive trend from beginning to end of data
+
+# Test for change point
+pettitt.test(Peter.mktest$absorbance) #change point detected at place 202 2011-06-06
+
+#run second MK test for each change point range
+mk.test(Peter.mktest$absorbance[1:201]) #p>0.05, no significant trend in this date range
+
+mk.test(Peter.mktest$absorbance[202:287]) #significant positive trend over time
+pettitt.test(Peter.mktest$absorbance[202:287]) #change point detected at place 50 (which means place 50+202=252 - 2014-06-30)
+mk.test(Peter.mktest$absorbance[202:251]) #no trend
+mk.test(Peter.mktest$absorbance[252:287]) #no trend
+
+ggplot(Peter.mktest, aes(x=sampledate, y=absorbance)) +
+  geom_point() +
+  geom_vline(xintercept=as.Date("2014-06-30")) +
+  geom_vline(xintercept=as.Date("2011-06-06")) +
+  geom_smooth(method=lm, color="red")
+```
+
+
+4. Paul Lake
+
+```{r}
+#Paul Lake
+Paul.mktest <- filter(carbon.data.processed.trimmed, lakename == "Paul Lake") %>% na.omit()
+
+#run MK test
+mk.test(Paul.mktest$absorbance) #p>0.05 so no significant over time
+
+# Test for change point
+pettitt.test(Paul.mktest$absorbance) #change point detected at place 72 2001-08-20
+
+#run second MK test for each change point range
+mk.test(Paul.mktest$absorbance[1:71]) #no trend
+
+mk.test(Paul.mktest$absorbance[72:291]) #no trend
+
+ggplot(Paul.mktest, aes(x=sampledate, y=absorbance)) +
+  geom_point() +
+  geom_vline(xintercept=as.Date("2001-08-20")) +
+  geom_smooth(method=lm, color="black")
+```
+
+5. Tuesday Lake
+
+
+```{r}
+#Tuesday
+Tuesday.mktest <- filter(carbon.data.processed.trimmed, lakename == "Tuesday Lake") %>% na.omit()
+
+#run MK test
+mk.test(Tuesday.mktest$absorbance) #p is significant, so there is a significant positive trend from beginning to end of data
+
+# Test for change point
+pettitt.test(Tuesday.mktest$absorbance) #change point detected at place 68 2014-06-25
+
+#run second MK test for each change point range
+mk.test(Tuesday.mktest$absorbance[1:67]) #p<0.05, significant negative trend in this range
+#test for change point
+pettitt.test(Tuesday.mktest$absorbance[1:67]) #change point detected at place 44 2012-08-22
+mk.test(Tuesday.mktest$absorbance[1:43]) #no trend
+mk.test(Tuesday.mktest$absorbance[44:67]) #no trend
+
+mk.test(Tuesday.mktest$absorbance[68:102]) #no trend
+
+ggplot(Tuesday.mktest, aes(x=sampledate, y=absorbance)) +
+  geom_point() +
+  geom_vline(xintercept=as.Date("2014-06-25")) +
+  geom_vline(xintercept=as.Date("2012-08-22")) +
+  geom_smooth(method=lm, color="red")
+```
+
+
+##Graph all together
+```{r}
+#East
+East <- ggplot(East.mktest, aes(x=sampledate, y=absorbance)) +
+  geom_point(color="#7fcdbb") +
+  geom_vline(xintercept=as.Date("1997-06-12")) +
+  geom_vline(xintercept=as.Date("1999-06-09")) +
+  geom_vline(xintercept = as.Date("1998-05-28")) +
+  geom_smooth(method=lm, color="black") +
+  theme(axis.title.x=element_blank(), axis.title.y=element_blank(), plot.title=element_text(hjust=0.5)) +
+  labs(title="East Long Lake")
+East
+
+#West
+West <- ggplot(West.mktest, aes(x=sampledate, y=absorbance)) +
+  geom_point(color = "#0c2c84") +
+  geom_vline(xintercept=as.Date("1998-08-31")) +
+  geom_smooth(method=lm, color = "black") +
+  theme(axis.title.x=element_blank(), axis.title.y=element_blank(), plot.title=element_text(hjust=0.5)) +
+  labs(title="West Long Lake")
+West  
+
+#peter
+Peter <- ggplot(Peter.mktest, aes(x=sampledate, y=absorbance)) +
+  geom_point(color="#41b6c4") +
+  geom_vline(xintercept=as.Date("2014-06-30")) +
+  geom_vline(xintercept=as.Date("2011-06-06")) +
+  geom_smooth(method=lm, color="red") +
+  theme(axis.title.x=element_blank(), axis.title.y=element_blank(), plot.title=element_text(hjust=0.5)) +
+  labs(title="Peter Lake")
+Peter
+
+#paul
+Paul <- ggplot(Paul.mktest, aes(x=sampledate, y=absorbance)) +
+  geom_point(color="#1d91c0") +
+  geom_vline(xintercept=as.Date("2001-08-20")) +
+  geom_smooth(method=lm, color="black") +
+  theme(axis.title.x=element_blank(), axis.title.y=element_blank(), plot.title=element_text(hjust=0.5)) +
+  labs(title="Paul Lake*")
+Paul
+
+#Tuesday
+Tuesday <- ggplot(Tuesday.mktest, aes(x=sampledate, y=absorbance)) +
+  geom_point(color="#225ea8") +
+  geom_vline(xintercept=as.Date("2014-06-25")) +
+  geom_vline(xintercept=as.Date("2012-08-22")) +
+  geom_smooth(method=lm, color="red") +
+  theme(axis.title.x=element_blank(), axis.title.y=element_blank(), plot.title=element_text(hjust=0.5)) +
+  labs(title="Tuesday Lake")
+Tuesday
+
+#ALL
+All <- ggplot(carbon.data.processed.trimmed, aes(x=sampledate, y = absorbance, color=lakename)) +
+  geom_point(aes(color=lakename), size = 2) + theme(legend.position="top", legend.title = element_blank(), legend.text=element_text(size=10)) +
+  theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
+  scale_color_manual(values = c("#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#0c2c84"), 
+                   breaks = c("East Long Lake", "Peter Lake", "Paul Lake", "Tuesday Lake", "West Long Lake"), 
+                   labels = c("East Long Lake", "Peter Lake", "Paul Lake", "Tuesday Lake", "West Long Lake"))
+All
+
+#PUT EVERYTHING TOGETHER!
+Absorbance.figure <- grid.arrange(All, East, West, Tuesday, Peter, Paul, ncol=3, nrow=3, 
+             layout_matrix = rbind(c(1, 1, 2),
+                                   c(1, 1, 3),
+                                   c(4, 5, 6)), 
+            top=textGrob("Absorbance over Time", gp=gpar(fontsize=20)),              bottom = "Date", 
+            left = "Absorbance")
+Absorbance.figure
+
+```
