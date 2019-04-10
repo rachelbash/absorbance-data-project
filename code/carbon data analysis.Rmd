@@ -24,6 +24,8 @@ library(dplyr)
 library(lubridate)
 library(FSA)
 library(corrplot)
+library(viridis)
+library(trend)
 
 # Set ggplot theme
 
@@ -43,10 +45,11 @@ carbon.data.processed <- read.csv("./processed-data/NTL-LTER_Carbon_Data_Process
 #set date
 carbon.data.processed$sampledate <- as.Date(carbon.data.processed$sampledate, format = "%m/%d/%y")
 class(carbon.data.processed$sampledate)
+head(carbon.data.processed$sampledate)
 
 ```
 
-
+##Lake absorbance differences
 ```{r}
 #test to see whether there is a significant difference in absorbance values across lakes
 
@@ -77,6 +80,7 @@ ggplot(carbon.data.processed, aes(x=lakename, y = absorbance)) +
   geom_violin(draw_quantiles = 0.5)
 ```
 
+#Correlation between continuous variables
 ```{r}
 #correlation plot
 carbon.data.processed.naomit <- carbon.data.processed %>% 
@@ -85,5 +89,32 @@ carbon.data.processed.naomit <- carbon.data.processed %>%
 
 carbonCorr <- cor(carbon.data.processed.naomit)
 corrplot.mixed(carbonCorr, upper = "ellipse")
+```
+
+
+##Linear regression model
+```{r}
+#Step-wise linear regression
+#did not include DIC because it just had too many NAs and wouldn't work to run the model
+steplm <- lm(data=carbon.data.processed, absorbance ~ depth + doc  + lakename)
+step(steplm) #taking out none would result in the lowest AIC value, therefore all variables help predict and best explain absorbance
+
+#full-model is the best, as shown by the step 
+fullmodel <- lm(data=carbon.data.processed, absorbance ~ depth + doc  + lakename)
+summary(fullmodel)
+```
+
+```{r}
+#graph the result
+ggplot(carbon.data.processed, aes(x=lakename, y=absorbance)) +
+         geom_point(aes(color=doc), alpha = 0.5) +
+         facet_wrap(vars(depth)) +
+         theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+         scale_color_viridis(option="viridis", direction = -1)
+```
+
+##Time Series Analysis
+```{r}
+summary(carbon.data.processed$absorbance)
 ```
 

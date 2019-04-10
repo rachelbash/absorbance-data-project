@@ -84,6 +84,8 @@ carbon.data.processed <- carbon.data %>%
   filter(lakename %in% c("Peter Lake", "Paul Lake", "East Long Lake", "Tuesday Lake", "West Long Lake")) %>%
   select(lakename:depth_id, DIC_mg, DIC_uM, doc, absorbance)
 
+str(carbon.data.processed)
+
 ```
 
 ```{r}
