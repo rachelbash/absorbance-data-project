@@ -58,10 +58,13 @@ ggplot(carbon.data) +
   geom_histogram(aes(x=doc))
 
 ggplot(carbon.data) +
-  geom_freqpoly(aes(x=absorbance, color = depth)) #shows absorbance differences depending on depth in lake
+  geom_freqpoly(aes(x=absorbance, color = depth)) +
+  labs(x= "Absorbance", y = "Frequency", color= "Depth") +
+  scale_color_brewer(palette = "Paired") #shows absorbance differences depending on depth in lake
 
 ggplot(carbon.data) +
-  geom_point(aes(x = absorbance, y = doc)) #absorbance and doc positively linearly related
+  geom_point(aes(x = absorbance, y = doc, color=year4)) +
+  scale_color_viridis(option="viridis", direction= -1)#absorbance and doc positively linearly related
 
 ggplot(carbon.data) +
   geom_point(aes(x = depth_id, y = absorbance))

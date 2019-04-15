@@ -7,13 +7,13 @@ output:
 geometry: margin=2.54cm
 title: UV Absorbance characteristics in Northern Lakes
 subtitle: https://github.com/rachelbash/absorbance-data-project
-author: Rachel
+author: Rachel Bash
 abstract: "Experimental overview. This section should be no longer than 250 words. What contributes to absorbance values in the NTL_LTER Carbon data set (will consider things such as DIC, DOC, depth, and water pressure). Also, is there a significant change in absorbance values in lakes over time?"
 fontsize: 12pt
 mainfont: Times New Roman
 ---
 
-<Information in these brackets are used for annotating the RMarkdown file. They will not appear in the final version of the PDF document>
+
 
 \newpage
 \tableofcontents 

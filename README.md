@@ -50,3 +50,8 @@ Files are named according to the following naming convention: `databasename_data
 **stage**refers to the stage in data management pipelines (e.g., raw, cleaned, or processed)
 
 **format** is a non-proprietary file format (e.g., .csv, .txt)
+
+
+Article about absorbance in lakes:
+https://link.springer.com/article/10.1007/s10021-014-9776-2
+
