@@ -49,6 +49,9 @@ carbon.data.processed$sampledate <- as.Date(carbon.data.processed$sampledate, fo
 class(carbon.data.processed$sampledate)
 head(carbon.data.processed$sampledate)
 
+#summarise data for kable table
+
+
 ```
 
 ##Lake absorbance differences
@@ -113,6 +116,7 @@ ggplot(carbon.data.processed, aes(x=lakename, y=absorbance)) +
          facet_wrap(vars(depth)) +
          theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
          scale_color_viridis(option="viridis", direction = -1)
+
 ```
 
 ##Time Series Analysis

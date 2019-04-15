@@ -28,8 +28,7 @@ library(lubridate)
 
 
 ```{r}
-#import data
-carbon.data <- read.csv("./raw-data/NTL-LTER_Lake_Carbon_Raw.csv")
+
 
 #View data
 #View(carbon.data)
@@ -52,7 +51,9 @@ head(carbon.data$sampledate)
 ```{r}
 #data visualization
 ggplot(carbon.data) +
-  geom_histogram(aes(x=absorbance))
+  geom_histogram(aes(x=absorbance), color="#1f78b4", fill="#1f78b4") +
+  labs(x= "Frequency", y="Absorbance value")
+
 
 ggplot(carbon.data) +
   geom_histogram(aes(x=doc))
@@ -64,19 +65,25 @@ ggplot(carbon.data) +
 
 ggplot(carbon.data) +
   geom_point(aes(x = absorbance, y = doc, color=year4)) +
-  scale_color_viridis(option="viridis", direction= -1)#absorbance and doc positively linearly related
+  scale_color_viridis(option="viridis", direction= -1) +
+  labs(x="Absorbance", y="Dissolved Organic Carbon, mg/L", color="Year") #absorbance and doc positively linearly related
 
 ggplot(carbon.data) +
   geom_point(aes(x = depth_id, y = absorbance))
 
+
 ggplot(carbon.data) +
-  geom_point(aes(x = sampledate, y = absorbance, color = lakename)) #shows absorbance over time
+  geom_point(aes(x = sampledate, y = absorbance, color = lakename)) + 
+  scale_x_date(limits = as.Date(c('1996-06-03','2016-08-17'))) #shows absorbance over time
 
 ggplot(carbon.data) +
   geom_point(aes(x = absorbance, y = DIC_uM)) #perhaps a small positive correlation between absorbance and DIC
 
 ggplot(carbon.data.processed) +
   geom_point(aes(x=depth, y = absorbance, color = lakename)) #shows absorbance by depth and lakename
+
+library(kableExtra)
+
 
 ```
 

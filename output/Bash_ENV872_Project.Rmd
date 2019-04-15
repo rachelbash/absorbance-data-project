@@ -18,26 +18,48 @@ mainfont: Times New Roman
 \newpage
 \tableofcontents 
 \newpage
-\listoftables 
+\listoftables
+1           Data Summary .........................................................................6
 \newpage
 \listoffigures 
 \newpage
 
-<Setup the global options for the R chunks in your document>
 
-<Note: set up autoreferencing for figures and tables in your document>
 
 ```{r setup, include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, fig.height=4)
 # Set your working directory
-
+getwd()
+setwd("/Users/rachelbash/Documents/DUKE/Data Analytics/absorbance-data-project")
 # Load your packages
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(FSA)
+library(corrplot)
+library(viridis)
+library(trend)
+library(gridExtra)
+library(grid)
+library(knitr)
+library(bookdown)
 
 # Set your ggplot theme
+Rachel_theme <- theme_bw(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "right")
+theme_set(Rachel_theme)
 
+#import data
+carbon.data <- read.csv("./raw-data/NTL-LTER_Lake_Carbon_Raw.csv")
 ```
 
 
 # Research Question and Rationale
+
+Absorbance is a unitless measurement that describes how much a substance absorbs light over a certain range of wavelenght. The absorbance values of water samples from lakes can provide details regarding its physical characteristics and the health of the lake. The amount of light entering a lake is an component that drives photosynthesis and lake metabolism. Additionally, lake temperature and its absorbance characteristics are deeply intertwined. With the right equipment, absorbance is fairly easy to measure. Therefore, measuring absorbance in lakes can give researchers insight into other processes happening that depend on sunlight. 
+
+This research project intends to answer two main questions: What contributes to absorbance values in five lakes located in Michigan's Upper Penninsula? Do absorbance values in these five study lakes change over time? The data that  answer these questions come from the North Temperate Lakes Project, which seeks to measure data on carbon and other related variables in lakes. My analysis of the data provides a model that shows the variables that best predict absorbance values and also takes a closer look at how absorbance values have changed over time in different lakes. Time variations in absorbance have implications that other physical characteristics are changing, which may damage  biota in the lakes or bring about significant changes in the greater ecosystem that surrounds the lake.
 
 <Paragraph detailing the rationale for your analysis. What is the significant application and/or interest in this topic? Connect to environmental topic(s)/challenge(s).>
 
@@ -51,6 +73,28 @@ mainfont: Times New Roman
 
 <Add a table that summarizes your data structure. This table can be made in markdown text or inserted as a `kable` function in an R chunk. If the latter, do not include the code used to generate your table.>
 
+The dataset was collected from 1984 to 2016 by researchers working for the Cascade Project and Northern Temperate Lakes at a total of 14 sites. Samples of water were collected, and then were measured. Measurements included dissolved organic and inorganic carbon, particulate organic matter, partial pressure of carbon dioxide, and absorbance. Absorbance was measured using a spectrophotometer at a wavelength of 440nm. 
+
+For some variables, a water depth sample was taken that was measured in meters, while in others, samples were taken to reflect a depth that was proportional across all lakes. Therefore, Hypolimnion, Epilimnion, Metalimnion, and pooled mixed layer (PML) are also included as depth values. All water samples were taken with a syringe and then filtered through a mesh filter in order to remove any large debris or zooplankton.
+
+Data Summary        | Relevant Information
+------------------- | ----------------------
+Date range          | 1984-06-03 to 2016-08-17
+Structure           | 15 variables with 13,557 observations
+Column names        | lakeid, lakename, year4, daynum, sampledate, depth, depth_id, tpc,    tpn, DIC_mg, DIC_uM, air_pco2, water_pco2, doc, absorbance
+Lakes sampled       | Crampton Lake, East Long Lake, Hummingbird Lake, Long Lake, Morris Lake, North Gate Bog, Paul Lake, Peter Lake, Reddington Lake, Roach Lake, Tender Bog, Tuesday Lake, Ward Lake, West Long Lake
+
+```{r, include=FALSE}
+#import data
+carbon.data <- read.csv("./raw-data/NTL-LTER_Lake_Carbon_Raw.csv")
+
+#set date
+carbon.data$sampledate <- as.Date(carbon.data$sampledate, format = "%m/%d/%y")
+head(carbon.data$sampledate)
+
+```
+
+
 \newpage
 
 # Exploratory Data Analysis and Wrangling
@@ -59,6 +103,51 @@ mainfont: Times New Roman
 
 <Include text sections to accompany these R chunks to explain the reasoning behind your workflow, and the rationale for your approach.>
 
+####Importing raw data and identifying its attributes
+
+```{r}
+#exploratory code to see the full dataset and its attributes
+colnames(carbon.data)
+str(carbon.data)
+summary(carbon.data)
+dim(carbon.data)
+summary(carbon.data$absorbance)
+class(carbon.data$depth)
+head(carbon.data$depth, 10)
+```
+
+These exploratory commands above function as helpful tools that help me see what kind of shape my data are in. It shows me how many NA's I have, what variables I am working with, the classes of my variables, and basic summary statistics. An important thing I discovered while doing the initial exploratory data analysis is that the depth variable has both numeric and factor-level observations, which is why its class is listed as `factor`. In other words, depth was measured in both numeric terms (1 meter, 13 meters, etc), but also in thermally stratified terms, such as Hypolimnion, Metalimnion, and Epilimnion. This was an important discovery that led to further data wrangling and filtering of this specific variable.
+
+####Visualizing the data
+
+As seen by \autoref{fig:foo}, Absorbance values are not normally distributed. This is expected, as we are dealing with ecological data.
+
+```{r foo, echo=FALSE, warning=FALSE, fig.cap="\\label{fig:foo}Absorbance frequency"}
+ggplot(carbon.data) +
+  geom_histogram(aes(x=absorbance), color="#1f78b4", fill="#1f78b4") +
+  labs(x= "Frequency", y="Absorbance value")
+```
+
+```{r freqpol, echo=FALSE, warning=FALSE, fig.cap="\\label{fig:freqpol}Absorbance frequency by depth category"}
+
+ggplot(carbon.data) +
+  geom_freqpoly(aes(x=absorbance, color = depth)) +
+  labs(x= "Absorbance", y = "Frequency", color= "Depth") +
+  scale_color_brewer(palette = "Paired")
+```
+
+
+Relatedly, \autoref{fig:freqpol} shows that different levels of depth (factor) had difference absorbance freqency values. It was helpful to create this graph to show that absorbance was measured at multiple different water depth levels.
+
+
+```{r absorbdoc, echo=FALSE, fig.cap="\\label{fig:absorbdoc} Disolved organic carbon and absorbance relationship by year"}
+ggplot(carbon.data) +
+  geom_point(aes(x = absorbance, y = doc, color=year4)) +
+  scale_color_viridis(option="viridis", direction= -1) +
+  labs(x="Absorbance", y="Dissolved Organic Carbon, mg/L", color="Year")
+```
+
+
 
 \newpage
 
@@ -66,6 +155,8 @@ mainfont: Times New Roman
 <Include R chunks for 3+ statistical tests (display code and output) and 3+ final visualization graphs (display graphs only).>
 
 <Include text sections to accompany these R chunks to explain the reasoning behind your workflow, rationale for your approach, and the justification of meeting or failing to meet assumptions of tests.>
+
+ 
 
 
 \newpage
