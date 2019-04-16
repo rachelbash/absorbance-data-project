@@ -20,6 +20,8 @@ Data were first accessed by Kateri Salk on 2018-12-06, but again accessed for th
 
 ## Data Content Information
 
+Information below was found and summarized from the NTL-LTER Carbon data homepage. 
+
 Data on dissolved organic and inorganic carbon, particulate organic matter, partial pressure of CO2 and absorbance at 440nm. Samples were collected with a Van Dorn sampler. Organic carbon and absorbance samples were collected from the epilimnion, metalimnion, and hypolimnion. Inorganic samples were collected at depths corresponding to 100%, 50%, 25%, 10%, 5%, and 1% of surface irradiance, as well as one sample from the hypolimnion. Samples for the partial pressure of CO2 were collected from two meters above the lake surface (air) and just below the lake surface (water). Sampling frequency: varies; number of sites: 14
 
 

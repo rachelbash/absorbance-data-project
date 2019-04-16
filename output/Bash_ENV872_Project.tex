@@ -652,11 +652,16 @@ different from one another.
 \begin{Highlighting}[]
 \CommentTok{#shows all lakes differ from one another significantly }
 
-\CommentTok{#created correct figure caption and auto}
+\CommentTok{#created correct figure caption and auto reference and they look exactly the same as the other figures, but knitting is not working for two of my figures and won't show up in the list of figures either.}
 \end{Highlighting}
 \end{Shaded}
 
+\begin{figure}
+\centering
 \includegraphics{Bash_ENV872_Project_files/figure-latex/vio-1.pdf}
+\caption{\label{fig:vio}Absorbance differences by lake}
+\end{figure}
+
 \newpage
 
 \subsection{Linear regression model}\label{linear-regression-model}
@@ -767,7 +772,12 @@ name, and their relationship to absorbance.
 ## F-statistic: 753.6 on 9 and 1119 DF,  p-value: < 2.2e-16
 \end{verbatim}
 
+\begin{figure}
+\centering
 \includegraphics{Bash_ENV872_Project_files/figure-latex/lin-1.pdf}
+\caption{\label{fig:lin}Facet plot of absorbance by TPC, DOC, and Depth}
+\end{figure}
+
 \newpage
 
 \subsection{Time Series Analysis}\label{time-series-analysis}
@@ -800,8 +810,9 @@ that absorbance values in these lakes increased over time (p-value Peter
 points. Lastly, Paul Lake's Mann Kendall test produced a non-significant
 p-value, suggesting that there is no significant monotonic trend in
 absorbance values over time (p-value = 0.10). However, a change point
-was still detected in data. \autoref{fig: time} summarizes and
-visualizes the findings.
+was still detected in data.
+
+\autoref{fig:time} summarizes and visualizes the findings.
 
 \begin{Shaded}
 \begin{Highlighting}[]

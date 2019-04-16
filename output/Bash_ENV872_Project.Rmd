@@ -219,9 +219,8 @@ kruskal.test(carbon.data.processed$absorbance ~ carbon.data.processed$lakename)
 dunnTest(carbon.data.processed$absorbance ~ carbon.data.processed$lakename) 
 #shows all lakes differ from one another significantly 
 
-#created correct figure caption and auto
+#created correct figure caption and auto reference and they look exactly the same as the other figures, but knitting is not working for two of my figures and won't show up in the list of figures either.
 ```
-
 
  
 ```{r vio, echo=FALSE, fig.cap="\\label{fig:vio}Absorbance differences by lake"}
@@ -232,6 +231,7 @@ ggplot(carbon.data.processed, aes(x=lakename, y = absorbance, color=lakename)) +
   scale_color_manual(values = c("#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#0c2c84"), 
                    breaks = c("East Long Lake", "Peter Lake", "Paul Lake", "Tuesday Lake", "West Long Lake"))
 ```
+
 \newpage
 
 ##Linear regression model
@@ -244,7 +244,7 @@ $$Absorbance = 0.18(Epi*East) + 0.17(Hypo) + 0.02(DOC) -$$
 $$0.18(Paul)  - 0.24(Peter) - 0.23(Tuesday) - 0.19(West) + 0.02(TPC) $$
 For example, for every one unit increase in DOC, absorbance value increases by 0.02 units. Alternatively, if absorbance is measured in Peter Lake, absorbance will decrease by 0.24 units. The step function shows that all variables, except for Metalimnion and PML depth categories were significant predictors of absorbance, and the full model had an adjusted R-squared value of 0.86, which is quite significant. However, it is important to note that because of missing values within each of the variables, there is an exceptionally high degrees of freedom value of 1119. 
 
-  \autoref{fig:lin} illustrates all predictors, with the exception of lake name, and their relationship to absorbance. 
+ \autoref{fig:lin} illustrates all predictors, with the exception of lake name, and their relationship to absorbance. 
  
 ```{r}
 #Step-wise linear regression
@@ -258,7 +258,7 @@ fullmodel <- lm(data=carbon.data.processed, absorbance ~ depth + doc  + lakename
 summary(fullmodel)
 ```
 
-```{r lin, echo=FALSE, fig.cap="\\label{fig:lin} Facet plot of absorbance by TPC, DOC, and Depth"}
+```{r lin, echo=FALSE, fig.cap="\\label{fig:lin}Facet plot of absorbance by TPC, DOC, and Depth"}
 
 ggplot(carbon.data.processed, aes(x=tpc, y=absorbance)) +
          geom_point(aes(color=doc), alpha = 0.5) +
@@ -269,8 +269,9 @@ ggplot(carbon.data.processed, aes(x=tpc, y=absorbance)) +
   labs(x = "Total Particulate Carbon (mg/L)", y = "Absorbance", color = "DOC")
 
 ```
-\newpage
 
+
+\newpage
 
 ##Time Series Analysis
 
@@ -278,7 +279,9 @@ A time series analysis will show whether absorbance values in lakes have changed
 
 To complete a time series analysis, I decided to split up the data by lake so that I was able to determine whether there was a trend in each lake. I also decided to filter the data by only observing absorbance values at the Hypolimnion, which is the stratified column below the thermocline at the bottom of the lake. I thought that choosing one depth height would be appropriate, and I chose the bottom because I thought it would be the most uniform layer among all lakes.
 
-East Long Lake had a significant Mann Kendall test result, which indicated a signicant negative monotonic trend over time (p-value = 2e-9). Using a series of pettitt tests and additional Mann Kendall tests, I discovered three change points in East Long Lake's absorbance data as well. West Long Lake also had significant negative trend from the beginning to the end of the data, with one change point detected (p-value = 1.18e-06). Peter and Tuesday Lakes both had a significant over positive trend over time, meaning that the Mann Kendall test shows that absorbance values in these lakes increased over time (p-value Peter = 1.47e-06; p-value Tuesday= 0.0005). Both lakes also had two change points. Lastly, Paul Lake's Mann Kendall test produced a non-significant p-value, suggesting that there is no significant monotonic trend in absorbance values over time (p-value = 0.10). However, a change point was still detected in data. \autoref{fig: time} summarizes and visualizes the findings.
+East Long Lake had a significant Mann Kendall test result, which indicated a signicant negative monotonic trend over time (p-value = 2e-9). Using a series of pettitt tests and additional Mann Kendall tests, I discovered three change points in East Long Lake's absorbance data as well. West Long Lake also had significant negative trend from the beginning to the end of the data, with one change point detected (p-value = 1.18e-06). Peter and Tuesday Lakes both had a significant over positive trend over time, meaning that the Mann Kendall test shows that absorbance values in these lakes increased over time (p-value Peter = 1.47e-06; p-value Tuesday= 0.0005). Both lakes also had two change points. Lastly, Paul Lake's Mann Kendall test produced a non-significant p-value, suggesting that there is no significant monotonic trend in absorbance values over time (p-value = 0.10). However, a change point was still detected in data. 
+
+ \autoref{fig:time} summarizes and visualizes the findings.
 
 ```{r}
 #trimming data to only look at points of interest
@@ -407,7 +410,7 @@ mk.test(Tuesday.mktest$absorbance[68:102]) #no trend
 ```
 
 
-```{r time, echo=FALSE, fig.cap="\\label{fig:time} Absorbance in East Long Lake, West Long Lake, Peter Lake, Paul Lake, and Tuesday Lake over time", fig.height=7, fig.width=9}
+```{r time, echo=FALSE, fig.cap="\\label{fig:time} Absorbance in East Long Lake, West Long Lake, Peter Lake, Paul Lake, and Tuesday Lake over time", fig.width=9, message=FALSE, warning=FALSE, fig.height=7}
 #East
 East <- ggplot(East.mktest, aes(x=sampledate, y=absorbance)) +
   geom_point(color="#7fcdbb") +
