@@ -131,11 +131,20 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-Experimental overview. This section should be no longer than 250 words.
-What contributes to absorbance values in the NTL\_LTER Carbon data set
-(will consider things such as DIC, DOC, depth, and water pressure).
-Also, is there a significant change in absorbance values in lakes over
-time?
+Absorbance values were measured during a portion of the Cascade Project
+in the Northern Temperate Lakes LTER network for lakes in northern
+Wisconsin and the southern part of Michigan's Upper Peninsula.
+Absorption of light in lakes can be an important variable to study in
+long-term monitoring programs because of its high correlations between
+other physical characterstics of lakes, such as dissolved organic carbon
+content. This study examined the variables that contributed to overall
+absorbance values and found that depth, dissolved organic carbon, total
+particulate carbon, and lake were significant predictors that informed
+the linear model. The study also examined absorbance changes over time
+in five lakes. East Long Lake and West Long Lake had decreasing
+absorbance values over time, while Tuesday and Peter Lakes had
+increasing absorbance values over time. Paul Lake did not display any
+significant trend over time.
 \end{abstract}
 
 \newpage
@@ -150,25 +159,27 @@ time?
 \section{Research Question and
 Rationale}\label{research-question-and-rationale}
 
-Absorbance is a unitless measurement that describes how much a substance
-can absorb light over a certain range of wavelength. The absorbance
-values of water samples from lakes can provide details regarding its
-physical characteristics and the health of the lake. The amount of light
-entering a lake is a component that drives photosynthesis and lake
-metabolism. Additionally, lake temperature and its absorbance
-characteristics are deeply intertwined. With the right equipment,
-absorbance is fairly easy to measure. Therefore, measuring absorbance in
-lakes can give researchers insight into other processes happening that
-depend in part on sunlight, such as algal growth or
-temperature-dependent processes.
+Absorbance is a unit-less measurement that describes how much a
+substance can absorb light over a certain range of wavelength. The
+absorbance values of water samples from lakes can provide details
+regarding its physical characteristics and the health of the lake. The
+amount of light entering a lake is a component that drives
+photosynthesis and lake metabolism (Thrane, 2014). Additionally, lake
+temperature and its absorbance characteristics are deeply intertwined.
+With the right equipment, absorbance is fairly easy to measure.
+Therefore, measuring absorbance in lakes can give researchers insight
+into other processes happening that depend in part on sunlight, such as
+algal growth or temperature-dependent biological activities.
 
-This research project intends to answer two main questions:
+This research project intends to answer three main questions:
 
 \begin{itemize}
 \tightlist
 \item
   What contributes to absorbance values in five lakes located in
-  Michigan's Upper Penninsula?
+  Michigan's Upper Peninsula?
+\item
+  Are absorbance values between lakes different?
 \item
   Do absorbance values in these five study lakes change over time?
 \end{itemize}
@@ -181,18 +192,21 @@ closer look at how absorbance values have changed over time in different
 lakes. Time variations in absorbance have implications that other
 physical characteristics are changing, which may damage biota in the
 lakes or bring about significant changes in the greater ecosystem that
-surrounds the lake.
+surrounds the lake. Because absorbance value changes can be an
+indicator, it is important to study this measurement and what
+contributes to the changes.
 
 \newpage
 
 \section{Dataset Information}\label{dataset-information}
 
 The dataset was collected from 1984 to 2016 by researchers working for
-the Cascade Project and Northern Temperate Lakes at a total of 14 sites.
-Samples of water were collected, and then were measured. Measurements
-included dissolved organic and inorganic carbon, particulate organic
-matter, partial pressure of carbon dioxide, and absorbance. Absorbance
-was measured using a spectrophotometer at a wavelength of 440nm.
+the Cascade Project and Northern Temperate Lakes Long-Term Ecological
+Research Network (NTL-LTER) at a total of 14 sites. Samples of water
+were collected, and then were measured. Measurements included dissolved
+organic and inorganic carbon, particulate organic matter, partial
+pressure of carbon dioxide, and absorbance. Absorbance was measured
+using a spectrophotometer at a wavelength of 440nanometers.
 
 For some variables, a water depth sample was taken that was measured in
 meters, while in others, samples were taken to reflect a depth that was
@@ -217,6 +231,12 @@ Date range\strut
 1984-06-03 to 2016-08-17\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.26\columnwidth}\raggedright\strut
+Retrieved from\strut
+\end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright\strut
+NTL - LTER Cascade Project at North Temperate Lakes LTER Core Data
+Carbon\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.26\columnwidth}\raggedright\strut
 Structure\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright\strut
 15 variables with 13,557 observations\strut
@@ -224,7 +244,7 @@ Structure\strut
 \begin{minipage}[t]{0.26\columnwidth}\raggedright\strut
 Column variables\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright\strut
-Lake ID, Lake Name, Year, Day No., Date, Depth, Depth ID, TPC, TPC, DIC,
+Lake ID, Lake Name, Year, Day No., Date, Depth, Depth ID, TPC, TPN, DIC,
 PCO2 air, PCO2 water, DOC, Absorbance\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.26\columnwidth}\raggedright\strut
@@ -366,12 +386,14 @@ attributes}\label{importing-raw-data-and-identifying-its-attributes}
 \end{verbatim}
 
 These exploratory commands above function as helpful tools that help me
-see what kind of shape my data are in. It shows me how many NA's I have,
-what variables I am working with, the classes of my variables, and basic
-summary statistics. An important thing I discovered while doing the
-initial exploratory data analysis is that the depth variable has both
-numeric and factor-level observations, which is why its class is listed
-as \texttt{factor}. In other words, depth was measured in both numeric
+see what kind of shape my data are in. It shows me the size of the data
+frame, how many NA's I have, what variables I am working with, the
+classes of my variables, and basic summary statistics. These are
+important to know and help inform me when making decisions about further
+analysis. An meaningful detail I discovered while doing the initial
+exploratory data analysis is that the depth variable has both numeric
+and factor-level observations, which is why its class is listed as
+\texttt{factor}. In other words, depth was measured in both numeric
 terms (1 meter, 13 meters, etc), but also in thermally stratified terms,
 such as Hypolimnion, Metalimnion, and Epilimnion. This was an important
 discovery that led to further data wrangling and filtering of this
@@ -394,8 +416,8 @@ distributed. This is expected, as we are dealing with ecological data.
 \caption{\label{fig:freqpol}Absorbance frequency by depth category}
 \end{figure}
 
-Relatedly, \autoref{fig:freqpol} shows that different levels of depth
-(factor) had difference absorbance freqency values. It was helpful to
+Similarly, \autoref{fig:freqpol} shows that different levels of depth
+(factor) had difference absorbance frequency values. It was helpful to
 create this graph to show that absorbance was measured at multiple
 different water depth levels.
 
@@ -411,7 +433,10 @@ organic carbon and absorbance, with a layer of color by year. This
 result is expected, and it gave me a good sense of what to expect during
 my analysis portion of the project. It is interesting to note that as
 time went on, measures for both absorbance and for DOC began to shrink
-to smaller values, as seen with the color gradient by year.
+to smaller values, as seen with the color gradient by year. Another
+thing this plot tells me is that absorbance probably wasn't measured in
+the early times of data collection, as there are no points before 1990,
+as indicated by the yellow color on the graph.
 
 \subsection{Data Wrangling}\label{data-wrangling}
 
@@ -453,9 +478,9 @@ continuous variables in question. All relationship correlations range
 pretty low to moderate, with DOC and absorbance having the lowest
 correlation coefficient of -0.12, and DIC and DOC having the highest
 negative correlation coefficient of -0.58. It is important to consider
-this visualization critically, as the data have been thoroughly at this
-point, leaving much fewer data points than what we started with, which
-could manipulate the strength (or weakness) of these correlation
+this visualization critically, as the data have been thoroughly reduced
+at this point, leaving much fewer data points than what we started with,
+which could manipulate the strength (or weakness) of these correlation
 coefficients.
 
 \newpage
@@ -470,21 +495,25 @@ significantly different across the five lakes of interest. This can be
 answered by a simple ANOVA test. However, the data must meet certain
 criteria. Fist, data had to be normally distributed, and second, equal
 variance across groups must exist. I tested these assumptions using the
-Shapiro test and the Bartlett test, respectively. Both tests resulted in
-significant p-values, indicating that the data fail the tests for
-normality and equal variances.
+Shapiro Wilk test and the Bartlett test, respectively. Both tests
+resulted in significant p-values, indicating that the data fail the
+tests for normality and equal variances.
 
-Therefore, another method had to be utlized. I opted for a
+Therefore, another method had to be utilized. I opted for a
 non-parametric test called the Kruskal Wallis test, a great alternative
 to ANOVAs. Here, I received a significant p-value result, indicating
 that there is a significant difference in absorbance values across
-different lakes. A non-parametric post-hoc test (Dunn Test) reveals that
-all lakes' mean absorbances values are significantly different from all
-other lakes (p-values \textless{} 0.05). \autoref{fig:violin}
-illustrates how absorbance values vary vastly by lake. Even though all
-of these lakes are located close to each other in Michigan's Upper
-Penninsula along the Wisconsin border, it is clear that absorbance
-values can vary greatly among them.
+different lakes (chi-squared = 739.62, df = 4, p-value \textless{}
+2.2e-16). A non-parametric post-hoc test (Dunn Test) reveals that all
+lakes' mean absorbances values are significantly different from all
+other lakes (p-values \textless{} 0.05). \autoref{fig:vio} illustrates
+how absorbance values vary vastly by lake. Even though all of these
+lakes are located close to each other in Michigan's Upper Peninsula
+along the Wisconsin border, it is clear that absorbance values can vary
+greatly among them. Even Peter and Paul Lakes, whose mean absorbance
+values do look fairly close, do possess a significant p-value in the
+post-hoc test, indicating that they are statistically significantly
+different from one another.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -625,7 +654,7 @@ values can vary greatly among them.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{Bash_ENV872_Project_files/figure-latex/violin-1.pdf}
+\includegraphics{Bash_ENV872_Project_files/figure-latex/vio-1.pdf}
 \newpage
 
 \subsection{Linear regression model}\label{linear-regression-model}
@@ -635,12 +664,12 @@ conducted a step-wise linear regression model. I was not able to include
 DIC in the full model, because DIC was only measured at numeric depths
 and not thermally stratified depths. Therefore, no data between
 absorbance and DIC overlapped. The full model included the following
-parameters: depth, DOC, Lake Name, and Total Particulate Carbon.
+parameters: depth, DOC, Lake Name, and Total Particulate Carbon (TPC).
 
 By performing a step-wise linear regression model, I can use the lowest
 Akaike's Information Criterion (AIC) value to determine the ideal
 statistical model that balances both simplicity and statistical power.
-The regression analysis showed that all variables are significant and
+My regression analysis showed that all variables are significant and
 allow us to best predict absorbance values. The resulting linear
 expression is as follows:
 
@@ -656,8 +685,8 @@ However, it is important to note that because of missing values within
 each of the variables, there is an exceptionally high degrees of freedom
 value of 1119.
 
-\autoref{fig:linreg} illustrates all predictors, with the exception of
-lake name, and their relationship to absorbance.
+\autoref{fig:lin} illustrates all predictors, with the exception of lake
+name, and their relationship to absorbance.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -736,7 +765,7 @@ lake name, and their relationship to absorbance.
 ## F-statistic: 753.6 on 9 and 1119 DF,  p-value: < 2.2e-16
 \end{verbatim}
 
-\includegraphics{Bash_ENV872_Project_files/figure-latex/linreg-1.pdf}
+\includegraphics{Bash_ENV872_Project_files/figure-latex/lin-1.pdf}
 \newpage
 
 \subsection{Time Series Analysis}\label{time-series-analysis}
@@ -747,6 +776,30 @@ is a monotonic overall trend in absorbance over time for the five lakes
 of interest. While there is perhaps seasonality differences in
 absorbance values, I am only interested in yearly trends, and so have
 decided not to look at seasonal differences of absorbance.
+
+To complete a time series analysis, I decided to split up the data by
+lake so that I was able to determine whether there was a trend in each
+lake. I also decided to filter the data by only observing absorbance
+values at the Hypolimnion, which is the stratified column below the
+thermocline at the bottom of the lake. I thought that choosing one depth
+height would be appropriate, and I chose the bottom because I thought it
+would be the most uniform layer among all lakes.
+
+East Long Lake had a significant Mann Kendall test result, which
+indicated a signicant negative monotonic trend over time (p-value =
+2e-9). Using a series of pettitt tests and additional Mann Kendall
+tests, I discovered three change points in East Long Lake's absorbance
+data as well. West Long Lake also had significant negative trend from
+the beginning to the end of the data, with one change point detected
+(p-value = 1.18e-06). Peter and Tuesday Lakes both had a significant
+over positive trend over time, meaning that the Mann Kendall test shows
+that absorbance values in these lakes increased over time (p-value Peter
+= 1.47e-06; p-value Tuesday= 0.0005). Both lakes also had two change
+points. Lastly, Paul Lake's Mann Kendall test produced a non-significant
+p-value, suggesting that there is no significant monotonic trend in
+absorbance values over time (p-value = 0.10). However, a change point
+was still detected in data. \autoref{fig: time} summarizes and
+visualizes the findings.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1400,6 +1453,57 @@ Peter Lake, Paul Lake, and Tuesday Lake over time}
 \newpage
 
 \section{Summary and Conclusions}\label{summary-and-conclusions}
+
+Absorbance is able to be predicted by lake, depth, total particulate
+carbon, and dissolved organic carbon concentration. The model that
+included all of these variables were able to explain 85\% of the
+variation of absorbance within the data. Absorbance values are also
+significantly different in all five lakes examined, as determined by the
+Kruskal Wallis and Dunn Tests.
+
+It is important to note that while these results are desirable and seem
+to explain a lot of the variation, there are many other factors that can
+contribute to absorbance values that were not measured in this dataset.
+Color of the lake, total depth of the lake, phytoplankton and its
+pigments, organic materials that were filtered out, and many other
+potential contributors were not considered. While depth was a variable,
+only the depth category of Hypolimnion was considered, which did not
+take into account the total depth of the water in the lake. Absorbance
+can also be measured at different wavelengths to determine the peak
+absorbance curve for different substances. The absorption of light also
+affects the amount of total energy captured by a substance.
+
+Absorbance characteristics of lakes can inform researchers of valuable
+information about other characteristics of the lakes that may not be
+measureable (Beaucler, 2001). Because absorbance is relatively easy to
+measure with a spectrophotometer, absorbance spectroscopy can be used to
+characterize and predict other characteristics. It can be an indication
+of the aesthetic quality of lakes, amount of DOC or algae or other
+substances in lakes, retention time, or even latitude (Erlandsson et
+al., 2012).
+
+Absorption of light in lakes is a great phenomenon that is easy to study
+and gives information about many other aspects of the lake's ecosystem.
+Understanding the relationship between absorbance, depth of the water,
+DOC content, and TPC content gives us a clearer understanding of the
+biology and physical characteristics of the five examined lakes in this
+larger dataset from the Northern Temperate Lakes project.
+
+\newpage
+
+\section{References}\label{references}
+
+Beaucler, K. B., \& Gunn, J. M. (2001). Ultraviolet absorbance in lakes
+near the metal smelters in Sudbury, Canada. Journal of Environmental
+Monitoring: JEM, 3(6), 575--579.
+
+Erlandsson, Martin \& Futter, Martyn \& Kothawala, D \& Köhler, S.
+(2012). Variability in spectral absorbance metrics across boreal lake
+waters. Journal of environmental monitoring : JEM. 14. 2643-52.
+10.1039/c2em30266g.
+
+Thrane, JE., Hessen, D.O. \& Andersen, T. Ecosystems (2014) 17: 1040.
+\url{https://doi.org/10.1007/s10021-014-9776-2}
 
 
 \end{document}
