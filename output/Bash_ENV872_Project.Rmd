@@ -148,12 +148,12 @@ Similarly, \autoref{fig:freqpol} shows that different levels of depth (factor) h
 
 ```{r absorbdoc, echo=FALSE, fig.cap="\\label{fig:absorbdoc} Disolved organic carbon and absorbance relationship by year"}
 ggplot(carbon.data) +
-  geom_point(aes(x = absorbance, y = doc, color=year4)) +
-  scale_color_viridis(option="viridis", direction= -1) +
+  geom_point(aes(x = absorbance, y = doc, color=year4), alpha = 0.7) +
+  scale_color_distiller(palette="YlGnBu", direction = 1) +
   labs(x="Absorbance", y="Dissolved Organic Carbon, mg/L", color="Year")
 ```
 
- \autoref{fig:absorbdoc} shows a positive relationship between dissolved organic carbon and absorbance, with a layer of color by year. This result is expected, and it gave me a good sense of what to expect during my analysis portion of the project. It is interesting to note that as time went on, measures for both absorbance and for DOC began to shrink to smaller values, as seen with the color gradient by year.
+ \autoref{fig:absorbdoc} shows a positive relationship between dissolved organic carbon and absorbance, with a layer of color by year. This result is expected, and it gave me a good sense of what to expect during my analysis portion of the project. It is interesting to note that as time went on, measures for both absorbance and for DOC began to shrink to smaller values, as seen with the color gradient by year. Another thing this plot tells me is that absorbance probably wasn't measured in the early times of data collection, as there are no points before 1990, as indicated by the yellow color on the graph.
  
 ##Data Wrangling
 ```{r}
