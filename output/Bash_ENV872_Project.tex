@@ -127,6 +127,20 @@
   \postdate{\par}
     \date{April 16th, 2019}
 
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 
 \begin{document}
 \maketitle
@@ -151,8 +165,6 @@ significant trend over time.
 
 \tableofcontents  \newpage
 \listoftables
-1 Data Summary
-\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}.6
 \newpage
 \listoffigures  \newpage
 
@@ -206,7 +218,7 @@ Research Network (NTL-LTER) at a total of 14 sites. Samples of water
 were collected, and then were measured. Measurements included dissolved
 organic and inorganic carbon, particulate organic matter, partial
 pressure of carbon dioxide, and absorbance. Absorbance was measured
-using a spectrophotometer at a wavelength of 440nanometers.
+using a spectrophotometer at a wavelength of 440 nanometers.
 
 For some variables, a water depth sample was taken that was measured in
 meters, while in others, samples were taken to reflect a depth that was
@@ -215,6 +227,32 @@ Metalimnion, and pooled mixed layer (PML) are also included as depth
 values. All water samples were taken with a syringe and then filtered
 through a mesh filter in order to remove any large debris or
 zooplankton.
+
+\begin{table}[!h]
+
+\caption{\label{tab:table}Data Summary}
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabular}{l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l}
+\hline
+  &     lakeid &           lakename &     year4 &     daynum &   sampledate &         depth &    depth\_id &      tpc &      tpn &     DIC\_mg &     DIC\_uM &    air\_pco2 &   water\_pco2 &      doc &   absorbance\\
+\hline
+\rowcolor{gray!6}   & R      :3887 & Peter Lake    :3887 & Min.   :1984 & Min.   : 82.0 & Min.   :1984-06-03 & 0          :1719 & Min.   :-2.000 & Min.   : 0.100 & Min.   :0.000 & Min.   : 0.023 & Min.   :   1.917 & Min.   :197.7 & Min.   :   0.0 & Min.   : 2.710 & Min.   :0.011\\
+\hline
+ & L      :3852 & Paul Lake     :3852 & 1st Qu.:1993 & 1st Qu.:166.0 & 1st Qu.:1993-06-16 & Metalimnion:1297 & 1st Qu.: 1.000 & 1st Qu.: 0.580 & 1st Qu.:0.070 & 1st Qu.: 0.812 & 1st Qu.:  67.625 & 1st Qu.:343.4 & 1st Qu.: 478.0 & 1st Qu.: 4.570 & 1st Qu.:0.060\\
+\hline
+\rowcolor{gray!6}   & T      :1818 & Tuesday Lake  :1818 & Median :1999 & Median :192.0 & Median :1999-07-06 & Hypolimnion:1020 & Median : 3.000 & Median : 0.890 & Median :0.103 & Median : 1.322 & Median : 110.167 & Median :362.9 & Median : 838.5 & Median : 5.603 & Median :0.146\\
+\hline
+ & W      :1571 & West Long Lake:1571 & Mean   :2000 & Mean   :192.4 & Mean   :2000-07-14 & PML        : 876 & Mean   : 2.775 & Mean   : 1.110 & Mean   :0.149 & Mean   : 2.310 & Mean   : 192.487 & Mean   :360.4 & Mean   :1012.3 & Mean   : 6.932 & Mean   :0.194\\
+\hline
+\rowcolor{gray!6}   & E      :1435 & East Long Lake:1435 & 3rd Qu.:2007 & 3rd Qu.:218.0 & 3rd Qu.:2007-08-28 & Epilimnion : 570 & 3rd Qu.: 5.000 & 3rd Qu.: 1.305 & 3rd Qu.:0.180 & 3rd Qu.: 1.968 & 3rd Qu.: 164.000 & 3rd Qu.:379.0 & 3rd Qu.:1175.6 & 3rd Qu.: 8.370 & 3rd Qu.:0.265\\
+\hline
+ & M      : 456 & Crampton Lake : 456 & Max.   :2016 & Max.   :310.0 & Max.   :2016-08-17 & (Other)    :7918 & Max.   : 7.000 & Max.   :11.860 & Max.   :2.170 & Max.   :48.599 & Max.   :4049.883 & Max.   :608.1 & Max.   :9348.2 & Max.   :44.080 & Max.   :1.213\\
+\hline
+\rowcolor{gray!6}   & (Other): 538 & (Other)       : 538 & NA & NA & NA & NA's       : 157 & NA's   :170 & NA's   :11410 & NA's   :11409 & NA's   :3642 & NA's   :3642 & NA's   :12411 & NA's   :12411 & NA's   :9993 & NA's   :10658\\
+\hline
+\end{tabular}}
+\end{table}
 
 \begin{longtable}[]{@{}ll@{}}
 \toprule
@@ -390,14 +428,14 @@ see what kind of shape my data are in. It shows me the size of the data
 frame, how many NA's I have, what variables I am working with, the
 classes of my variables, and basic summary statistics. These are
 important to know and help inform me when making decisions about further
-analysis. An meaningful detail I discovered while doing the initial
+analysis. A meaningful detail I discovered while doing the initial
 exploratory data analysis is that the depth variable has both numeric
 and factor-level observations, which is why its class is listed as
 \texttt{factor}. In other words, depth was measured in both numeric
-terms (1 meter, 13 meters, etc), but also in thermally stratified terms,
-such as Hypolimnion, Metalimnion, and Epilimnion. This was an important
-discovery that led to further data wrangling and filtering of this
-specific variable.
+terms (e.g.~1 meter, 13 meters, etc), but also in thermally stratified
+terms, such as Hypolimnion, Metalimnion, and Epilimnion. This was an
+important discovery that led to further data wrangling and filtering of
+this specific variable.
 
 \subsection{Visualizing the data}\label{visualizing-the-data}
 
@@ -417,8 +455,8 @@ distributed. This is expected, as we are dealing with ecological data.
 \end{figure}
 
 Similarly, \autoref{fig:freqpol} shows that different levels of depth
-(factor) had difference absorbance frequency values. It was helpful to
-create this graph to show that absorbance was measured at multiple
+(as a factor) had difference absorbance frequency values. It was helpful
+to create this graph to show that absorbance was measured at multiple
 different water depth levels.
 
 \begin{figure}
@@ -798,7 +836,7 @@ height would be appropriate, and I chose the bottom because I thought it
 would be the most uniform layer among all lakes.
 
 East Long Lake had a significant Mann Kendall test result, which
-indicated a signicant negative monotonic trend over time (p-value =
+indicated a significant negative monotonic trend over time (p-value =
 2e-9). Using a series of pettitt tests and additional Mann Kendall
 tests, I discovered three change points in East Long Lake's absorbance
 data as well. West Long Lake also had significant negative trend from
@@ -1488,7 +1526,7 @@ affects the amount of total energy captured by a substance.
 
 Absorbance characteristics of lakes can inform researchers of valuable
 information about other characteristics of the lakes that may not be
-measureable (Beaucler, 2001). Because absorbance is relatively easy to
+measurable (Beaucler, 2001). Because absorbance is relatively easy to
 measure with a spectrophotometer, absorbance spectroscopy can be used to
 characterize and predict other characteristics. It can be an indication
 of the aesthetic quality of lakes, amount of DOC or algae or other

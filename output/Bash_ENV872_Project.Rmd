@@ -20,7 +20,6 @@ mainfont: Times New Roman
 \tableofcontents 
 \newpage
 \listoftables
-1           Data Summary .........................................................................6
 \newpage
 \listoffigures 
 \newpage
@@ -43,7 +42,8 @@ library(trend)
 library(gridExtra)
 library(grid)
 library(knitr)
-library(bookdown)
+library(kableExtra)
+
 
 # Set your ggplot theme
 Rachel_theme <- theme_bw(base_size = 14) +
@@ -78,17 +78,10 @@ The data that  answer these questions come from the North Temperate Lakes Projec
 
 <Add a table that summarizes your data structure. This table can be made in markdown text or inserted as a `kable` function in an R chunk. If the latter, do not include the code used to generate your table.>
 
-The dataset was collected from 1984 to 2016 by researchers working for the Cascade Project and Northern Temperate Lakes Long-Term Ecological Research Network (NTL-LTER) at a total of 14 sites. Samples of water were collected, and then were measured. Measurements included dissolved organic and inorganic carbon, particulate organic matter, partial pressure of carbon dioxide, and absorbance. Absorbance was measured using a spectrophotometer at a wavelength of 440nanometers. 
+The dataset was collected from 1984 to 2016 by researchers working for the Cascade Project and Northern Temperate Lakes Long-Term Ecological Research Network (NTL-LTER) at a total of 14 sites. Samples of water were collected, and then were measured. Measurements included dissolved organic and inorganic carbon, particulate organic matter, partial pressure of carbon dioxide, and absorbance. Absorbance was measured using a spectrophotometer at a wavelength of 440 nanometers. 
 
 For some variables, a water depth sample was taken that was measured in meters, while in others, samples were taken to reflect a depth that was proportional across all lakes. Therefore, Hypolimnion, Epilimnion, Metalimnion, and pooled mixed layer (PML) are also included as depth values. All water samples were taken with a syringe and then filtered through a mesh filter in order to remove any large debris or zooplankton.
 
-Data Summary        | Relevant Information
-------------------- | ----------------------
-Date range          | 1984-06-03 to 2016-08-17
-Retrieved from      | NTL - LTER Cascade Project at North Temperate Lakes LTER Core Data Carbon 
-Structure           | 15 variables with 13,557 observations
-Column variables    | Lake ID, Lake Name, Year, Day No., Date, Depth, Depth ID, TPC, TPN, DIC, PCO2 air, PCO2 water, DOC, Absorbance
-Lakes sampled       | Crampton Lake, East Long Lake, Hummingbird Lake, Long Lake, Morris Lake, North Gate Bog, Paul Lake, Peter Lake, Reddington Lake, Roach Lake, Tender Bog, Tuesday Lake, Ward Lake, West Long Lake
 
 ```{r, include=FALSE}
 #import data
@@ -100,6 +93,20 @@ head(carbon.data$sampledate)
 
 ```
 
+```{r table, echo=FALSE, tbls = "Summary of NTL-LTER Carbon Data"}
+summary <- summary(carbon.data)
+kable(summary, caption = "Data Summary") %>%
+  kable_styling(latex_options= c("hold_position", "striped", "scale_down"))
+
+```
+
+Data Summary        | Relevant Information
+------------------- | ----------------------
+Date range          | 1984-06-03 to 2016-08-17
+Retrieved from      | NTL - LTER Cascade Project at North Temperate Lakes LTER Core Data Carbon 
+Structure           | 15 variables with 13,557 observations
+Column variables    | Lake ID, Lake Name, Year, Day No., Date, Depth, Depth ID, TPC, TPN, DIC, PCO2 air, PCO2 water, DOC, Absorbance
+Lakes sampled       | Crampton Lake, East Long Lake, Hummingbird Lake, Long Lake, Morris Lake, North Gate Bog, Paul Lake, Peter Lake, Reddington Lake, Roach Lake, Tender Bog, Tuesday Lake, Ward Lake, West Long Lake
 
 \newpage
 
@@ -122,7 +129,7 @@ class(carbon.data$depth)
 head(carbon.data$depth, 10)
 ```
 
-These exploratory commands above function as helpful tools that help me see what kind of shape my data are in. It shows me the size of the data frame, how many NA's I have, what variables I am working with, the classes of my variables, and basic summary statistics. These are important to know and help inform me when making decisions about further analysis. An meaningful detail I discovered while doing the initial exploratory data analysis is that the depth variable has both numeric and factor-level observations, which is why its class is listed as `factor`. In other words, depth was measured in both numeric terms (1 meter, 13 meters, etc), but also in thermally stratified terms, such as Hypolimnion, Metalimnion, and Epilimnion. This was an important discovery that led to further data wrangling and filtering of this specific variable.
+These exploratory commands above function as helpful tools that help me see what kind of shape my data are in. It shows me the size of the data frame, how many NA's I have, what variables I am working with, the classes of my variables, and basic summary statistics. These are important to know and help inform me when making decisions about further analysis. A meaningful detail I discovered while doing the initial exploratory data analysis is that the depth variable has both numeric and factor-level observations, which is why its class is listed as `factor`. In other words, depth was measured in both numeric terms (e.g. 1 meter, 13 meters, etc), but also in thermally stratified terms, such as Hypolimnion, Metalimnion, and Epilimnion. This was an important discovery that led to further data wrangling and filtering of this specific variable.
 
 ##Visualizing the data
 
@@ -143,7 +150,7 @@ ggplot(carbon.data) +
 ```
 
 
-Similarly, \autoref{fig:freqpol} shows that different levels of depth (factor) had difference absorbance frequency values. It was helpful to create this graph to show that absorbance was measured at multiple different water depth levels.
+Similarly, \autoref{fig:freqpol} shows that different levels of depth (as a factor) had difference absorbance frequency values. It was helpful to create this graph to show that absorbance was measured at multiple different water depth levels.
 
 
 ```{r absorbdoc, echo=FALSE, fig.cap="\\label{fig:absorbdoc} Disolved organic carbon and absorbance relationship by year"}
@@ -279,7 +286,7 @@ A time series analysis will show whether absorbance values in lakes have changed
 
 To complete a time series analysis, I decided to split up the data by lake so that I was able to determine whether there was a trend in each lake. I also decided to filter the data by only observing absorbance values at the Hypolimnion, which is the stratified column below the thermocline at the bottom of the lake. I thought that choosing one depth height would be appropriate, and I chose the bottom because I thought it would be the most uniform layer among all lakes.
 
-East Long Lake had a significant Mann Kendall test result, which indicated a signicant negative monotonic trend over time (p-value = 2e-9). Using a series of pettitt tests and additional Mann Kendall tests, I discovered three change points in East Long Lake's absorbance data as well. West Long Lake also had significant negative trend from the beginning to the end of the data, with one change point detected (p-value = 1.18e-06). Peter and Tuesday Lakes both had a significant over positive trend over time, meaning that the Mann Kendall test shows that absorbance values in these lakes increased over time (p-value Peter = 1.47e-06; p-value Tuesday= 0.0005). Both lakes also had two change points. Lastly, Paul Lake's Mann Kendall test produced a non-significant p-value, suggesting that there is no significant monotonic trend in absorbance values over time (p-value = 0.10). However, a change point was still detected in data. 
+East Long Lake had a significant Mann Kendall test result, which indicated a significant negative monotonic trend over time (p-value = 2e-9). Using a series of pettitt tests and additional Mann Kendall tests, I discovered three change points in East Long Lake's absorbance data as well. West Long Lake also had significant negative trend from the beginning to the end of the data, with one change point detected (p-value = 1.18e-06). Peter and Tuesday Lakes both had a significant over positive trend over time, meaning that the Mann Kendall test shows that absorbance values in these lakes increased over time (p-value Peter = 1.47e-06; p-value Tuesday= 0.0005). Both lakes also had two change points. Lastly, Paul Lake's Mann Kendall test produced a non-significant p-value, suggesting that there is no significant monotonic trend in absorbance values over time (p-value = 0.10). However, a change point was still detected in data. 
 
  \autoref{fig:time} summarizes and visualizes the findings.
 
@@ -490,7 +497,7 @@ Absorbance is able to be predicted by lake, depth, total particulate carbon, and
 
 It is important to note that while these results are desirable and seem to explain a lot of the variation, there are many other factors that can contribute to absorbance values that were not measured in this dataset. Color of the lake, total depth of the lake, phytoplankton and its pigments, organic materials that were filtered out, and many other potential contributors were not considered. While depth was a variable, only the depth category of Hypolimnion was considered, which did not take into account the total depth of the water in the lake. Absorbance can also be measured at different wavelengths to determine the peak absorbance curve for different substances. The absorption of light also affects the amount of total energy captured by a substance. 
 
-Absorbance characteristics of lakes can inform researchers of valuable information about other characteristics of the lakes that may not be measureable (Beaucler, 2001). Because absorbance is relatively easy to measure with a spectrophotometer, absorbance spectroscopy can be used to characterize and predict other characteristics. It can be an indication of the aesthetic quality of lakes,  amount of DOC or algae or other substances in lakes, retention time, or even latitude (Erlandsson et al., 2012). 
+Absorbance characteristics of lakes can inform researchers of valuable information about other characteristics of the lakes that may not be measurable (Beaucler, 2001). Because absorbance is relatively easy to measure with a spectrophotometer, absorbance spectroscopy can be used to characterize and predict other characteristics. It can be an indication of the aesthetic quality of lakes,  amount of DOC or algae or other substances in lakes, retention time, or even latitude (Erlandsson et al., 2012). 
 
 Absorption of light in lakes is a great phenomenon that is easy to study and gives information about many other aspects of the lake's ecosystem. Understanding the relationship between absorbance, depth of the water, DOC content, and TPC content gives us a clearer understanding of the biology and physical characteristics of the five examined lakes in this larger dataset from the Northern Temperate Lakes project.
 
