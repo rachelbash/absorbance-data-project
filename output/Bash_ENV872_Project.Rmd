@@ -218,11 +218,13 @@ kruskal.test(carbon.data.processed$absorbance ~ carbon.data.processed$lakename)
 #post-hoc non-parametric test
 dunnTest(carbon.data.processed$absorbance ~ carbon.data.processed$lakename) 
 #shows all lakes differ from one another significantly 
+
+#created correct figure caption and auto
 ```
 
 
  
-```{r vio, echo=FALSE, fig.cap="\\label{fig:vio} Absorbance differences by lake"}
+```{r vio, echo=FALSE, fig.cap="\\label{fig:vio}Absorbance differences by lake"}
 ggplot(carbon.data.processed, aes(x=lakename, y = absorbance, color=lakename)) +
   geom_violin(draw_quantiles = 0.5) +
   labs(x="Lake Names", y="Absorbance Distribution") +
