@@ -28,7 +28,7 @@ library(lubridate)
 
 
 ```{r}
-
+carbon.data <- read.csv("./raw-data/NTL-LTER_Lake_Carbon_Raw.csv")
 
 #View data
 #View(carbon.data)
@@ -92,7 +92,7 @@ library(kableExtra)
 carbon.data.processed <- carbon.data %>%
   filter(depth %in% c("PML", "Hypolimnion", "Epilimnion", "Metalimnion")) %>%
   filter(lakename %in% c("Peter Lake", "Paul Lake", "East Long Lake", "Tuesday Lake", "West Long Lake")) %>%
-  select(lakename:depth_id, DIC_mg, DIC_uM, doc, absorbance)
+  select(lakename:depth_id, DIC_mg, doc, absorbance, tpc)
 
 
 summary(carbon.data.processed)

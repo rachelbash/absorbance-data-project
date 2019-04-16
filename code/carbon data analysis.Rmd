@@ -49,7 +49,7 @@ carbon.data.processed$sampledate <- as.Date(carbon.data.processed$sampledate, fo
 class(carbon.data.processed$sampledate)
 head(carbon.data.processed$sampledate)
 
-#summarise data for kable table
+
 
 
 ```
@@ -81,15 +81,19 @@ dunnTest(carbon.data.processed$absorbance ~ carbon.data.processed$lakename) #sho
 
 ```{r}
 #visualize data
-ggplot(carbon.data.processed, aes(x=lakename, y = absorbance)) +
-  geom_violin(draw_quantiles = 0.5)
+ggplot(carbon.data.processed, aes(x=lakename, y = absorbance, color=lakename)) +
+  geom_violin(draw_quantiles = 0.5) +
+  labs(x="Lake Names", y="Absorbance Distribution") +
+  theme(axis.text.x = element_text(angle = 45,  hjust = 1), axis.text = element_text(size=10),  legend.title = element_blank(), legend.position="none") +
+  scale_color_manual(values = c("#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#0c2c84"), 
+                   breaks = c("East Long Lake", "Peter Lake", "Paul Lake", "Tuesday Lake", "West Long Lake"))
 ```
 
 #Correlation between continuous variables
 ```{r}
 #correlation plot
 carbon.data.processed.naomit <- carbon.data.processed %>% 
-  select(DIC_uM:absorbance) %>%
+  select(DIC_mg:tpc) %>%
   na.omit()
 
 carbonCorr <- cor(carbon.data.processed.naomit)
@@ -97,25 +101,27 @@ corrplot.mixed(carbonCorr, upper = "ellipse")
 ```
 
 
-##Linear regression model
+####Linear regression model
 ```{r}
 #Step-wise linear regression
 #did not include DIC because it just had too many NAs and wouldn't work to run the model
-steplm <- lm(data=carbon.data.processed, absorbance ~ depth + doc  + lakename)
+steplm <- lm(data=carbon.data.processed, absorbance ~ depth + doc  + lakename + tpc)
 step(steplm) #taking out none would result in the lowest AIC value, therefore all variables help predict and best explain absorbance
 
 #full-model is the best, as shown by the step 
-fullmodel <- lm(data=carbon.data.processed, absorbance ~ depth + doc  + lakename)
+fullmodel <- lm(data=carbon.data.processed, absorbance ~ depth + doc  + lakename + tpc)
 summary(fullmodel)
 ```
 
 ```{r}
 #graph the result
-ggplot(carbon.data.processed, aes(x=lakename, y=absorbance)) +
+ggplot(carbon.data.processed, aes(x=tpc, y=absorbance)) +
          geom_point(aes(color=doc), alpha = 0.5) +
          facet_wrap(vars(depth)) +
-         theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-         scale_color_viridis(option="viridis", direction = -1)
+         theme(axis.text.x = element_text(angle = 45, hjust = 1), strip.text.x=element_text(size = 9)) +
+         scale_color_viridis(option="viridis", direction = -1) +
+         xlim(0,5) +
+  labs(x = "Total Particulate Carbon", y = "Absorbance", color = "DOC")
 
 ```
 
@@ -133,24 +139,10 @@ carbon.data.processed.trimmed <- carbon.data.processed %>%
 ggplot(carbon.data.processed.trimmed, aes(x=sampledate, y=absorbance)) +
   geom_point(aes(color=lakename))
 
-#interpolate
-carbon.interpolate <- approx(carbon.data.processed.trimmed$absorbance, carbon.data.processed.trimmed$sampledate, method="linear", n=849)
 
-# Turn the interpolated dataset into a proper dataframe
-carbon.interpolate <- do.call(cbind.data.frame, carbon.interpolate)
-names(carbon.interpolate) <- c("Absorbance", "Date")
-carbon.interpolate$Date <- as.Date(carbon.interpolate$Date, 
-                                            origin = "1970/01/01")
-
-# Create a time series object
-carbon.timeseries <- ts(carbon.interpolate$Absorbance, 
-                                start = c(1996, 6) ,frequency = 4)
-carbon.smktest <- smk.test(carbon.timeseries)
-carbon.smktest
-summary(carbon.smktest)
 
 ```
-###Split data by Lake
+#####Split data by Lake
 
 1. East Long Lake
 
@@ -176,12 +168,7 @@ pettitt.test(East.mktest$absorbance[30:73]) #change point detected at place 17 (
 mk.test(East.mktest$absorbance[30:46]) #no trend
 mk.test(East.mktest$absorbance[47:73]) #no trend
 
-ggplot(East.mktest, aes(x=sampledate, y=absorbance)) +
-  geom_point() +
-  geom_vline(xintercept=as.Date("1997-06-12")) +
-  geom_vline(xintercept=as.Date("1999-06-09")) +
-  geom_vline(xintercept = as.Date("1998-05-28")) +
-  geom_smooth(method=lm, color="black")
+
 ```
 
 2. West Long Lake
@@ -201,10 +188,6 @@ mk.test(West.mktest$absorbance[1:43]) #no trend
 
 mk.test(West.mktest$absorbance[44:87]) #no significant trend in this range
 
-ggplot(West.mktest, aes(x=sampledate, y=absorbance)) +
-  geom_point() +
-  geom_vline(xintercept=as.Date("1998-08-31")) +
-  geom_smooth(method=lm, color = "black")
   
 ```
 
@@ -229,11 +212,6 @@ pettitt.test(Peter.mktest$absorbance[202:287]) #change point detected at place 5
 mk.test(Peter.mktest$absorbance[202:251]) #no trend
 mk.test(Peter.mktest$absorbance[252:287]) #no trend
 
-ggplot(Peter.mktest, aes(x=sampledate, y=absorbance)) +
-  geom_point() +
-  geom_vline(xintercept=as.Date("2014-06-30")) +
-  geom_vline(xintercept=as.Date("2011-06-06")) +
-  geom_smooth(method=lm, color="red")
 ```
 
 
@@ -254,10 +232,7 @@ mk.test(Paul.mktest$absorbance[1:71]) #no trend
 
 mk.test(Paul.mktest$absorbance[72:291]) #no trend
 
-ggplot(Paul.mktest, aes(x=sampledate, y=absorbance)) +
-  geom_point() +
-  geom_vline(xintercept=as.Date("2001-08-20")) +
-  geom_smooth(method=lm, color="black")
+
 ```
 
 5. Tuesday Lake
@@ -282,11 +257,7 @@ mk.test(Tuesday.mktest$absorbance[44:67]) #no trend
 
 mk.test(Tuesday.mktest$absorbance[68:102]) #no trend
 
-ggplot(Tuesday.mktest, aes(x=sampledate, y=absorbance)) +
-  geom_point() +
-  geom_vline(xintercept=as.Date("2014-06-25")) +
-  geom_vline(xintercept=as.Date("2012-08-22")) +
-  geom_smooth(method=lm, color="red")
+
 ```
 
 
@@ -301,7 +272,7 @@ East <- ggplot(East.mktest, aes(x=sampledate, y=absorbance)) +
   geom_smooth(method=lm, color="black") +
   theme(axis.title.x=element_blank(), axis.title.y=element_blank(), plot.title=element_text(hjust=0.5)) +
   labs(title="East Long Lake")
-#East
+
 
 #West
 West <- ggplot(West.mktest, aes(x=sampledate, y=absorbance)) +
@@ -310,7 +281,7 @@ West <- ggplot(West.mktest, aes(x=sampledate, y=absorbance)) +
   geom_smooth(method=lm, color = "black") +
   theme(axis.title.x=element_blank(), axis.title.y=element_blank(), plot.title=element_text(hjust=0.5)) +
   labs(title="West Long Lake")
-#West  
+  
 
 #peter
 Peter <- ggplot(Peter.mktest, aes(x=sampledate, y=absorbance)) +
@@ -320,7 +291,7 @@ Peter <- ggplot(Peter.mktest, aes(x=sampledate, y=absorbance)) +
   geom_smooth(method=lm, color="red") +
   theme(axis.title.x=element_blank(), axis.title.y=element_blank(), plot.title=element_text(hjust=0.5)) +
   labs(title="Peter Lake")
-#Peter
+
 
 #paul
 Paul <- ggplot(Paul.mktest, aes(x=sampledate, y=absorbance)) +
@@ -329,7 +300,7 @@ Paul <- ggplot(Paul.mktest, aes(x=sampledate, y=absorbance)) +
   geom_smooth(method=lm, color="black") +
   theme(axis.title.x=element_blank(), axis.title.y=element_blank(), plot.title=element_text(hjust=0.5)) +
   labs(title="Paul Lake*")
-#Paul
+
 
 #Tuesday
 Tuesday <- ggplot(Tuesday.mktest, aes(x=sampledate, y=absorbance)) +
@@ -339,7 +310,7 @@ Tuesday <- ggplot(Tuesday.mktest, aes(x=sampledate, y=absorbance)) +
   geom_smooth(method=lm, color="red") +
   theme(axis.title.x=element_blank(), axis.title.y=element_blank(), plot.title=element_text(hjust=0.5)) +
   labs(title="Tuesday Lake")
-#Tuesday
+
 
 #ALL
 All <- ggplot(carbon.data.processed.trimmed, aes(x=sampledate, y = absorbance, color=lakename)) +

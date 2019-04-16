@@ -22,7 +22,7 @@
 \usepackage{microtype}
 \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
-\usepackage[margin=2.54cm]{geometry}
+\usepackage[margin=2cm]{geometry}
 \usepackage{hyperref}
 \hypersetup{unicode=true,
             pdftitle={UV Absorbance characteristics in Northern Lakes},
@@ -123,9 +123,10 @@
   \author{Rachel Bash}
     \preauthor{\centering\large\emph}
   \postauthor{\par}
-    \date{}
-    \predate{}\postdate{}
-  
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{April 16th, 2019}
+
 
 \begin{document}
 \maketitle
@@ -142,7 +143,7 @@ time?
 \tableofcontents  \newpage
 \listoftables
 1 Data Summary
-\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}.6
+\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}\ldots{}.6
 \newpage
 \listoffigures  \newpage
 
@@ -150,28 +151,37 @@ time?
 Rationale}\label{research-question-and-rationale}
 
 Absorbance is a unitless measurement that describes how much a substance
-absorbs light over a certain range of wavelenght. The absorbance values
-of water samples from lakes can provide details regarding its physical
-characteristics and the health of the lake. The amount of light entering
-a lake is an component that drives photosynthesis and lake metabolism.
-Additionally, lake temperature and its absorbance characteristics are
-deeply intertwined. With the right equipment, absorbance is fairly easy
-to measure. Therefore, measuring absorbance in lakes can give
-researchers insight into other processes happening that depend on
-sunlight.
+can absorb light over a certain range of wavelength. The absorbance
+values of water samples from lakes can provide details regarding its
+physical characteristics and the health of the lake. The amount of light
+entering a lake is a component that drives photosynthesis and lake
+metabolism. Additionally, lake temperature and its absorbance
+characteristics are deeply intertwined. With the right equipment,
+absorbance is fairly easy to measure. Therefore, measuring absorbance in
+lakes can give researchers insight into other processes happening that
+depend in part on sunlight, such as algal growth or
+temperature-dependent processes.
 
-This research project intends to answer two main questions: What
-contributes to absorbance values in five lakes located in Michigan's
-Upper Penninsula? Do absorbance values in these five study lakes change
-over time? The data that answer these questions come from the North
-Temperate Lakes Project, which seeks to measure data on carbon and other
-related variables in lakes. My analysis of the data provides a model
-that shows the variables that best predict absorbance values and also
-takes a closer look at how absorbance values have changed over time in
-different lakes. Time variations in absorbance have implications that
-other physical characteristics are changing, which may damage biota in
-the lakes or bring about significant changes in the greater ecosystem
-that surrounds the lake.
+This research project intends to answer two main questions:
+
+\begin{itemize}
+\tightlist
+\item
+  What contributes to absorbance values in five lakes located in
+  Michigan's Upper Penninsula?
+\item
+  Do absorbance values in these five study lakes change over time?
+\end{itemize}
+
+The data that answer these questions come from the North Temperate Lakes
+Project, which seeks to measure data on carbon and other related
+variables in lakes. My analysis of the data provides a model that shows
+the variables that best predict absorbance values and also takes a
+closer look at how absorbance values have changed over time in different
+lakes. Time variations in absorbance have implications that other
+physical characteristics are changing, which may damage biota in the
+lakes or bring about significant changes in the greater ecosystem that
+surrounds the lake.
 
 \newpage
 
@@ -212,10 +222,10 @@ Structure\strut
 15 variables with 13,557 observations\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.26\columnwidth}\raggedright\strut
-Column names\strut
+Column variables\strut
 \end{minipage} & \begin{minipage}[t]{0.30\columnwidth}\raggedright\strut
-lakeid, lakename, year4, daynum, sampledate, depth, depth\_id, tpc, tpn,
-DIC\_mg, DIC\_uM, air\_pco2, water\_pco2, doc, absorbance\strut
+Lake ID, Lake Name, Year, Day No., Date, Depth, Depth ID, TPC, TPC, DIC,
+PCO2 air, PCO2 water, DOC, Absorbance\strut
 \end{minipage}\tabularnewline
 \begin{minipage}[t]{0.26\columnwidth}\raggedright\strut
 Lakes sampled\strut
@@ -232,12 +242,11 @@ Tender Bog, Tuesday Lake, Ward Lake, West Long Lake\strut
 \section{Exploratory Data Analysis and
 Wrangling}\label{exploratory-data-analysis-and-wrangling}
 
-\paragraph{Importing raw data and identifying its
+\subsection{Importing raw data and identifying its
 attributes}\label{importing-raw-data-and-identifying-its-attributes}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{#exploratory code to see the full dataset and its attributes}
 \KeywordTok{colnames}\NormalTok{(carbon.data)}
 \end{Highlighting}
 \end{Shaded}
@@ -368,7 +377,7 @@ such as Hypolimnion, Metalimnion, and Epilimnion. This was an important
 discovery that led to further data wrangling and filtering of this
 specific variable.
 
-\paragraph{Visualizing the data}\label{visualizing-the-data}
+\subsection{Visualizing the data}\label{visualizing-the-data}
 
 As seen by \autoref{fig:foo}, Absorbance values are not normally
 distributed. This is expected, as we are dealing with ecological data.
@@ -397,9 +406,996 @@ different water depth levels.
 relationship by year}
 \end{figure}
 
+\autoref{fig:absorbdoc} shows a positive relationship between dissolved
+organic carbon and absorbance, with a layer of color by year. This
+result is expected, and it gave me a good sense of what to expect during
+my analysis portion of the project. It is interesting to note that as
+time went on, measures for both absorbance and for DOC began to shrink
+to smaller values, as seen with the color gradient by year.
+
+\subsection{Data Wrangling}\label{data-wrangling}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{carbon.data.processed <-}\StringTok{ }\NormalTok{carbon.data }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(depth }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"PML"}\NormalTok{, }\StringTok{"Hypolimnion"}\NormalTok{, }\StringTok{"Epilimnion"}\NormalTok{, }\StringTok{"Metalimnion"}\NormalTok{)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(lakename }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Peter Lake"}\NormalTok{, }\StringTok{"Paul Lake"}\NormalTok{, }\StringTok{"East Long Lake"}\NormalTok{, }\StringTok{"Tuesday Lake"}\NormalTok{, }\StringTok{"West Long Lake"}\NormalTok{)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(lakename}\OperatorTok{:}\NormalTok{depth_id, DIC_mg, doc, absorbance, tpc)}
+\end{Highlighting}
+\end{Shaded}
+
+There were many things to consider when wrangling my data to a more
+manageable and workable dataset. I noticed that all absorbance values
+had associated depth measurements using only the thermally stratified
+depth categories. Therefore, I filtered out any depth that was measured
+in meters, in order to simplify the process. Next, I chose the five
+lakes in the dataset that had the most number of data points. Shortening
+the lake list from 14 to 5 gives the research project a more focused
+view and potentially stronger relationships among variables. Lastly, I
+selected only the columns that I wanted to study and that could be
+analyzed in relation to absorbance values. These variables included lake
+name, depth, dissolved inorganic carbon, dissolved organic carbon, total
+particulate carbon, and absorbance.
+
+\subsection{Correlation between continuous
+variables}\label{correlation-between-continuous-variables}
+
+\begin{figure}
+\centering
+\includegraphics{Bash_ENV872_Project_files/figure-latex/corr-1.pdf}
+\caption{\label{fig:corr} Correlation plot between continuous variables}
+\end{figure}
+
+The last piece of data exploration I completed was visualizing the
+correlation between the continuous variables in the data.
+\autoref{fig:corr} illustrates the relationships between each of the
+continuous variables in question. All relationship correlations range
+pretty low to moderate, with DOC and absorbance having the lowest
+correlation coefficient of -0.12, and DIC and DOC having the highest
+negative correlation coefficient of -0.58. It is important to consider
+this visualization critically, as the data have been thoroughly at this
+point, leaving much fewer data points than what we started with, which
+could manipulate the strength (or weakness) of these correlation
+coefficients.
+
 \newpage
 
 \section{Analysis}\label{analysis}
+
+\subsection{Differences in absorbance values across
+lakes}\label{differences-in-absorbance-values-across-lakes}
+
+It was important for me to know whether absorbance values were
+significantly different across the five lakes of interest. This can be
+answered by a simple ANOVA test. However, the data must meet certain
+criteria. Fist, data had to be normally distributed, and second, equal
+variance across groups must exist. I tested these assumptions using the
+Shapiro test and the Bartlett test, respectively. Both tests resulted in
+significant p-values, indicating that the data fail the tests for
+normality and equal variances.
+
+Therefore, another method had to be utlized. I opted for a
+non-parametric test called the Kruskal Wallis test, a great alternative
+to ANOVAs. Here, I received a significant p-value result, indicating
+that there is a significant difference in absorbance values across
+different lakes. A non-parametric post-hoc test (Dunn Test) reveals that
+all lakes' mean absorbances values are significantly different from all
+other lakes (p-values \textless{} 0.05). \autoref{fig:violin}
+illustrates how absorbance values vary vastly by lake. Even though all
+of these lakes are located close to each other in Michigan's Upper
+Penninsula along the Wisconsin border, it is clear that absorbance
+values can vary greatly among them.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# test for normality}
+\KeywordTok{shapiro.test}\NormalTok{(carbon.data.processed}\OperatorTok{$}\NormalTok{absorbance}
+\NormalTok{             [carbon.data.processed}\OperatorTok{$}\NormalTok{lakename }\OperatorTok{==}\StringTok{ "Tuesday Lake"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  carbon.data.processed$absorbance[carbon.data.processed$lakename ==     "Tuesday Lake"]
+## W = 0.97269, p-value = 8.155e-06
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{shapiro.test}\NormalTok{(carbon.data.processed}\OperatorTok{$}\NormalTok{absorbance}
+\NormalTok{             [carbon.data.processed}\OperatorTok{$}\NormalTok{lakename }\OperatorTok{==}\StringTok{ "Paul Lake"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  carbon.data.processed$absorbance[carbon.data.processed$lakename ==     "Paul Lake"]
+## W = 0.71627, p-value < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{shapiro.test}\NormalTok{(carbon.data.processed}\OperatorTok{$}\NormalTok{absorbance}
+\NormalTok{             [carbon.data.processed}\OperatorTok{$}\NormalTok{lakename }\OperatorTok{==}\StringTok{ "Peter Lake"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  carbon.data.processed$absorbance[carbon.data.processed$lakename ==     "Peter Lake"]
+## W = 0.79554, p-value < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{shapiro.test}\NormalTok{(carbon.data.processed}\OperatorTok{$}\NormalTok{absorbance}
+\NormalTok{             [carbon.data.processed}\OperatorTok{$}\NormalTok{lakename }\OperatorTok{==}\StringTok{ "East Long Lake"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  carbon.data.processed$absorbance[carbon.data.processed$lakename ==     "East Long Lake"]
+## W = 0.92578, p-value = 1.573e-09
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{shapiro.test}\NormalTok{(carbon.data.processed}\OperatorTok{$}\NormalTok{absorbance}
+\NormalTok{             [carbon.data.processed}\OperatorTok{$}\NormalTok{lakename }\OperatorTok{==}\StringTok{ "West Long Lake"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  carbon.data.processed$absorbance[carbon.data.processed$lakename ==     "West Long Lake"]
+## W = 0.94549, p-value = 1.008e-08
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#result: all have significant p-values, meaning they are not normally distributed data }
+
+\CommentTok{#bartlett test to determine whether there is equal variance between groups}
+\KeywordTok{bartlett.test}\NormalTok{(carbon.data.processed}\OperatorTok{$}\NormalTok{absorbance }\OperatorTok{~}\StringTok{ }\NormalTok{carbon.data.processed}\OperatorTok{$}\NormalTok{lakename) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Bartlett test of homogeneity of variances
+## 
+## data:  carbon.data.processed$absorbance by carbon.data.processed$lakename
+## Bartlett's K-squared = 846.15, df = 4, p-value < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#result: significant p-value, not equal variances}
+
+\CommentTok{#non-parametric test instead}
+\KeywordTok{kruskal.test}\NormalTok{(carbon.data.processed}\OperatorTok{$}\NormalTok{absorbance }\OperatorTok{~}\StringTok{ }\NormalTok{carbon.data.processed}\OperatorTok{$}\NormalTok{lakename)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Kruskal-Wallis rank sum test
+## 
+## data:  carbon.data.processed$absorbance by carbon.data.processed$lakename
+## Kruskal-Wallis chi-squared = 739.62, df = 4, p-value < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#lakename is a significant predictor of absorbance}
+
+\CommentTok{#post-hoc non-parametric test}
+\KeywordTok{dunnTest}\NormalTok{(carbon.data.processed}\OperatorTok{$}\NormalTok{absorbance }\OperatorTok{~}\StringTok{ }\NormalTok{carbon.data.processed}\OperatorTok{$}\NormalTok{lakename) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                         Comparison          Z       P.unadj         P.adj
+## 1       East Long Lake - Paul Lake  21.376177 2.226386e-101 2.003747e-100
+## 2      East Long Lake - Peter Lake  23.056681 1.260584e-117 1.260584e-116
+## 3           Paul Lake - Peter Lake   2.633408  8.453271e-03  1.690654e-02
+## 4    East Long Lake - Tuesday Lake   8.552531  1.204182e-17  3.612546e-17
+## 5         Paul Lake - Tuesday Lake -12.824220  1.199877e-37  8.399141e-37
+## 6        Peter Lake - Tuesday Lake -14.730183  4.125885e-49  3.300708e-48
+## 7  East Long Lake - West Long Lake  10.416882  2.076502e-25  1.038251e-24
+## 8       Paul Lake - West Long Lake  -9.446619  3.499535e-21  1.399814e-20
+## 9      Peter Lake - West Long Lake -11.265531  1.941779e-29  1.165067e-28
+## 10   Tuesday Lake - West Long Lake   2.295393  2.171061e-02  2.171061e-02
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#shows all lakes differ from one another significantly }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Bash_ENV872_Project_files/figure-latex/violin-1.pdf}
+\newpage
+
+\subsection{Linear regression model}\label{linear-regression-model}
+
+In order to determine what factors contribute to absorbance values, I
+conducted a step-wise linear regression model. I was not able to include
+DIC in the full model, because DIC was only measured at numeric depths
+and not thermally stratified depths. Therefore, no data between
+absorbance and DIC overlapped. The full model included the following
+parameters: depth, DOC, Lake Name, and Total Particulate Carbon.
+
+By performing a step-wise linear regression model, I can use the lowest
+Akaike's Information Criterion (AIC) value to determine the ideal
+statistical model that balances both simplicity and statistical power.
+The regression analysis showed that all variables are significant and
+allow us to best predict absorbance values. The resulting linear
+expression is as follows:
+
+\[Absorbance = 0.18(Epi*East) + 0.17(Hypo) + 0.02(DOC) -\]
+\[0.18(Paul)  - 0.24(Peter) - 0.23(Tuesday) - 0.19(West) + 0.02(TPC) \]
+For example, for every one unit increase in DOC, absorbance value
+increases by 0.02 units. Alternatively, if absorbance is measured in
+Peter Lake, absorbance will decrease by 0.24 units. The step function
+shows that all variables, except for Metalimnion and PML depth
+categories were significant predictors of absorbance, and the full model
+had an adjusted R-squared value of 0.86, which is quite significant.
+However, it is important to note that because of missing values within
+each of the variables, there is an exceptionally high degrees of freedom
+value of 1119.
+
+\autoref{fig:linreg} illustrates all predictors, with the exception of
+lake name, and their relationship to absorbance.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Step-wise linear regression}
+
+\NormalTok{steplm <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(}\DataTypeTok{data=}\NormalTok{carbon.data.processed, absorbance }\OperatorTok{~}\StringTok{ }\NormalTok{depth }\OperatorTok{+}\StringTok{ }\NormalTok{doc  }\OperatorTok{+}\StringTok{ }\NormalTok{lakename }\OperatorTok{+}\StringTok{ }\NormalTok{tpc)}
+\KeywordTok{step}\NormalTok{(steplm) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Start:  AIC=-6251.63
+## absorbance ~ depth + doc + lakename + tpc
+## 
+##            Df Sum of Sq    RSS     AIC
+## <none>                  4.3669 -6251.6
+## - tpc       1    0.1978 4.5647 -6203.6
+## - doc       1    0.5211 4.8880 -6126.4
+## - lakename  4    3.2696 7.6365 -5628.7
+## - depth     3    5.1414 9.5084 -5379.1
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = absorbance ~ depth + doc + lakename + tpc, data = carbon.data.processed)
+## 
+## Coefficients:
+##            (Intercept)        depthHypolimnion        depthMetalimnion  
+##               0.175600                0.171535                0.008826  
+##               depthPML                     doc       lakenamePaul Lake  
+##               0.005411                0.018642               -0.184280  
+##     lakenamePeter Lake    lakenameTuesday Lake  lakenameWest Long Lake  
+##              -0.241944               -0.229613               -0.188448  
+##                    tpc  
+##               0.018681
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#taking out none would result in the lowest AIC value}
+
+\CommentTok{#full-model is the best, as shown by the step }
+\NormalTok{fullmodel <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(}\DataTypeTok{data=}\NormalTok{carbon.data.processed, absorbance }\OperatorTok{~}\StringTok{ }\NormalTok{depth }\OperatorTok{+}\StringTok{ }\NormalTok{doc  }\OperatorTok{+}\StringTok{ }\NormalTok{lakename }\OperatorTok{+}\StringTok{ }\NormalTok{tpc)}
+\KeywordTok{summary}\NormalTok{(fullmodel)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = absorbance ~ depth + doc + lakename + tpc, data = carbon.data.processed)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.27056 -0.03147 -0.00548  0.02536  0.38625 
+## 
+## Coefficients:
+##                         Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)             0.175600   0.023113   7.598 6.35e-14 ***
+## depthHypolimnion        0.171535   0.006031  28.441  < 2e-16 ***
+## depthMetalimnion        0.008826   0.005946   1.484    0.138    
+## depthPML                0.005411   0.006724   0.805    0.421    
+## doc                     0.018642   0.001613  11.555  < 2e-16 ***
+## lakenamePaul Lake      -0.184280   0.015929 -11.569  < 2e-16 ***
+## lakenamePeter Lake     -0.241944   0.014605 -16.566  < 2e-16 ***
+## lakenameTuesday Lake   -0.229613   0.009794 -23.444  < 2e-16 ***
+## lakenameWest Long Lake -0.188448   0.011833 -15.926  < 2e-16 ***
+## tpc                     0.018681   0.002624   7.119 1.94e-12 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.06247 on 1119 degrees of freedom
+##   (2294 observations deleted due to missingness)
+## Multiple R-squared:  0.8584, Adjusted R-squared:  0.8572 
+## F-statistic: 753.6 on 9 and 1119 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\includegraphics{Bash_ENV872_Project_files/figure-latex/linreg-1.pdf}
+\newpage
+
+\subsection{Time Series Analysis}\label{time-series-analysis}
+
+A time series analysis will show whether absorbance values in lakes have
+changed over time. I used a Mann Kendall test to determine whether there
+is a monotonic overall trend in absorbance over time for the five lakes
+of interest. While there is perhaps seasonality differences in
+absorbance values, I am only interested in yearly trends, and so have
+decided not to look at seasonal differences of absorbance.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#trimming data to only look at points of interest}
+\NormalTok{carbon.data.processed.trimmed <-}\StringTok{ }\NormalTok{carbon.data.processed }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(depth }\OperatorTok{==}\StringTok{ "Hypolimnion"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(absorbance, sampledate, lakename) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(sampledate }\OperatorTok{>}\StringTok{ }\KeywordTok{as.Date}\NormalTok{(}\StringTok{"1996-06-01"}\NormalTok{) }\OperatorTok{&}\StringTok{ }\NormalTok{sampledate }\OperatorTok{<}\StringTok{ }\KeywordTok{as.Date}\NormalTok{(}\StringTok{"2016-08-17"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{East Long Lake}\label{east-long-lake}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#East Lake}
+\NormalTok{East.mktest <-}\StringTok{ }\KeywordTok{filter}\NormalTok{(carbon.data.processed.trimmed, lakename }\OperatorTok{==}\StringTok{ "East Long Lake"}\NormalTok{)}
+
+\CommentTok{#run MK test}
+\KeywordTok{mk.test}\NormalTok{(East.mktest}\OperatorTok{$}\NormalTok{absorbance) }\CommentTok{#p=2e-9, so there is a significant negative trend from beginning to end of data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  East.mktest$absorbance
+## z = -5.9962, n = 73, p-value = 2.019e-09
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##             S          varS           tau 
+## -1260.0000000 44085.3333333    -0.4800003
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Test for change point}
+\KeywordTok{pettitt.test}\NormalTok{(East.mktest}\OperatorTok{$}\NormalTok{absorbance) }\CommentTok{#change point detected at place 30 1998-05-28}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pettitt's test for single change-point detection
+## 
+## data:  East.mktest$absorbance
+## U* = 1165, p-value = 2.151e-09
+## alternative hypothesis: two.sided
+## sample estimates:
+## probable change point at time K 
+##                              30
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#run second MK test for each change point range}
+\KeywordTok{mk.test}\NormalTok{(East.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{1}\OperatorTok{:}\DecValTok{29}\NormalTok{]) }\CommentTok{#p=1e-5, significant positive trend in this range}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  East.mktest$absorbance[1:29]
+## z = 4.4118, n = 29, p-value = 1.025e-05
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+##  236.0000000 2837.3333333    0.5841656
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#test for change point}
+\KeywordTok{pettitt.test}\NormalTok{(East.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{1}\OperatorTok{:}\DecValTok{29}\NormalTok{]) }\CommentTok{#change point detected at place 17 1997-06-12}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pettitt's test for single change-point detection
+## 
+## data:  East.mktest$absorbance[1:29]
+## U* = 185, p-value = 0.0005838
+## alternative hypothesis: two.sided
+## sample estimates:
+## probable change point at time K 
+##                              17
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mk.test}\NormalTok{(East.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{1}\OperatorTok{:}\DecValTok{16}\NormalTok{]) }\CommentTok{#no trend}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  East.mktest$absorbance[1:16]
+## z = 1.2156, n = 16, p-value = 0.2241
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##           S        varS         tau 
+##  28.0000000 493.3333333   0.2333333
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mk.test}\NormalTok{(East.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{17}\OperatorTok{:}\DecValTok{29}\NormalTok{]) }\CommentTok{#no trend}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  East.mktest$absorbance[17:29]
+## z = 1.5972, n = 13, p-value = 0.1102
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##          S       varS        tau 
+##  27.000000 265.000000   0.353009
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mk.test}\NormalTok{(East.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{30}\OperatorTok{:}\DecValTok{73}\NormalTok{]) }\CommentTok{#significant negative trend over time}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  East.mktest$absorbance[30:73]
+## z = -3.4795, n = 44, p-value = 0.0005024
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+## -345.0000000 9774.3333333   -0.3648864
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pettitt.test}\NormalTok{(East.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{30}\OperatorTok{:}\DecValTok{73}\NormalTok{]) }\CommentTok{#change point detected at place 17 (which means place 47 - 1999-06-09)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pettitt's test for single change-point detection
+## 
+## data:  East.mktest$absorbance[30:73]
+## U* = 365, p-value = 0.0002071
+## alternative hypothesis: two.sided
+## sample estimates:
+## probable change point at time K 
+##                              17
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mk.test}\NormalTok{(East.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{30}\OperatorTok{:}\DecValTok{46}\NormalTok{]) }\CommentTok{#no trend}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  East.mktest$absorbance[30:46]
+## z = 0.82455, n = 17, p-value = 0.4096
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##           S        varS         tau 
+##  21.0000000 588.3333333   0.1549826
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mk.test}\NormalTok{(East.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{47}\OperatorTok{:}\DecValTok{73}\NormalTok{]) }\CommentTok{#no trend}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  East.mktest$absorbance[47:73]
+## z = 0, n = 27, p-value = 1
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##             S          varS           tau 
+## -1.000000e+00  2.301000e+03 -2.849003e-03
+\end{verbatim}
+
+\subsubsection{West Long Lake}\label{west-long-lake}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#split data by lake}
+\NormalTok{West.mktest <-}\StringTok{ }\KeywordTok{filter}\NormalTok{(carbon.data.processed.trimmed, lakename }\OperatorTok{==}\StringTok{ "West Long Lake"}\NormalTok{)}
+
+\CommentTok{#run MK test}
+\KeywordTok{mk.test}\NormalTok{(West.mktest}\OperatorTok{$}\NormalTok{absorbance) }\CommentTok{#p is significant, so there is a significant negative trend from beginning to end of data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  West.mktest$absorbance
+## z = -4.8587, n = 87, p-value = 1.181e-06
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##             S          varS           tau 
+## -1326.0000000 74368.0000000    -0.3559285
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Test for change point}
+\KeywordTok{pettitt.test}\NormalTok{(West.mktest}\OperatorTok{$}\NormalTok{absorbance) }\CommentTok{#change point detected at place 44 1998-08-31}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pettitt's test for single change-point detection
+## 
+## data:  West.mktest$absorbance
+## U* = 1584, p-value = 3.057e-10
+## alternative hypothesis: two.sided
+## sample estimates:
+## probable change point at time K 
+##                              44
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#run second MK test for each change point range}
+\KeywordTok{mk.test}\NormalTok{(West.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{1}\OperatorTok{:}\DecValTok{43}\NormalTok{]) }\CommentTok{#no trend}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  West.mktest$absorbance[1:43]
+## z = 0.59704, n = 43, p-value = 0.5505
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+## 5.800000e+01 9.114667e+03 6.469774e-02
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mk.test}\NormalTok{(West.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{44}\OperatorTok{:}\DecValTok{87}\NormalTok{]) }\CommentTok{#no significant trend in this range}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  West.mktest$absorbance[44:87]
+## z = 1.4676, n = 44, p-value = 0.1422
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+##  146.0000000 9762.0000000    0.1553223
+\end{verbatim}
+
+\subsubsection{Peter Lake}\label{peter-lake}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Peter Lake}
+\NormalTok{Peter.mktest <-}\StringTok{ }\KeywordTok{filter}\NormalTok{(carbon.data.processed.trimmed, lakename }\OperatorTok{==}\StringTok{ "Peter Lake"}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{na.omit}\NormalTok{()}
+
+\CommentTok{#run MK test}
+\KeywordTok{mk.test}\NormalTok{(Peter.mktest}\OperatorTok{$}\NormalTok{absorbance) }\CommentTok{#p val is significant so there is a significant positive trend from beginning to end of data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Peter.mktest$absorbance
+## z = 4.8159, n = 287, p-value = 1.465e-06
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+## 7.826000e+03 2.640047e+06 1.911373e-01
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Test for change point}
+\KeywordTok{pettitt.test}\NormalTok{(Peter.mktest}\OperatorTok{$}\NormalTok{absorbance) }\CommentTok{#change point detected at place 202 2011-06-06}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pettitt's test for single change-point detection
+## 
+## data:  Peter.mktest$absorbance
+## U* = 7794, p-value = 4.25e-07
+## alternative hypothesis: two.sided
+## sample estimates:
+## probable change point at time K 
+##                             202
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#run second MK test for each change point range}
+\KeywordTok{mk.test}\NormalTok{(Peter.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{1}\OperatorTok{:}\DecValTok{201}\NormalTok{]) }\CommentTok{#p>0.05, no significant trend in this date range}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Peter.mktest$absorbance[1:201]
+## z = -0.89267, n = 201, p-value = 0.372
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##             S          varS           tau 
+## -8.520000e+02  9.088247e+05 -4.250453e-02
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mk.test}\NormalTok{(Peter.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{202}\OperatorTok{:}\DecValTok{287}\NormalTok{]) }\CommentTok{#significant positive trend over time}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Peter.mktest$absorbance[202:287]
+## z = 4.0658, n = 86, p-value = 4.786e-05
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+## 1.091000e+03 7.187167e+04 2.989044e-01
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pettitt.test}\NormalTok{(Peter.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{202}\OperatorTok{:}\DecValTok{287}\NormalTok{]) }\CommentTok{#change point detected at place 50 (which means place 50+202=252 - 2014-06-30)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pettitt's test for single change-point detection
+## 
+## data:  Peter.mktest$absorbance[202:287]
+## U* = 1301, p-value = 2.796e-07
+## alternative hypothesis: two.sided
+## sample estimates:
+## probable change point at time K 
+##                              50
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mk.test}\NormalTok{(Peter.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{202}\OperatorTok{:}\DecValTok{251}\NormalTok{]) }\CommentTok{#no trend}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Peter.mktest$absorbance[202:251]
+## z = -1.9409, n = 50, p-value = 0.05227
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##             S          varS           tau 
+##  -233.0000000 14287.6666667    -0.1905154
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mk.test}\NormalTok{(Peter.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{252}\OperatorTok{:}\DecValTok{287}\NormalTok{]) }\CommentTok{#no trend}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Peter.mktest$absorbance[252:287]
+## z = 0.29974, n = 36, p-value = 0.7644
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+## 2.300000e+01 5.387000e+03 3.659517e-02
+\end{verbatim}
+
+\subsubsection{Paul Lake}\label{paul-lake}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Paul Lake}
+\NormalTok{Paul.mktest <-}\StringTok{ }\KeywordTok{filter}\NormalTok{(carbon.data.processed.trimmed, lakename }\OperatorTok{==}\StringTok{ "Paul Lake"}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{na.omit}\NormalTok{()}
+
+\CommentTok{#run MK test}
+\KeywordTok{mk.test}\NormalTok{(Paul.mktest}\OperatorTok{$}\NormalTok{absorbance) }\CommentTok{#p>0.05 so no significant over time}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Paul.mktest$absorbance
+## z = -1.6421, n = 291, p-value = 0.1006
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##             S          varS           tau 
+## -2.725000e+03  2.751921e+06 -6.466546e-02
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Test for change point}
+\KeywordTok{pettitt.test}\NormalTok{(Paul.mktest}\OperatorTok{$}\NormalTok{absorbance) }\CommentTok{#change point detected at place 72 2001-08-20}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pettitt's test for single change-point detection
+## 
+## data:  Paul.mktest$absorbance
+## U* = 4575, p-value = 0.01245
+## alternative hypothesis: two.sided
+## sample estimates:
+## probable change point at time K 
+##                              72
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#run second MK test for each change point range}
+\KeywordTok{mk.test}\NormalTok{(Paul.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{1}\OperatorTok{:}\DecValTok{71}\NormalTok{]) }\CommentTok{#no trend}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Paul.mktest$absorbance[1:71]
+## z = -1.1566, n = 71, p-value = 0.2474
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##             S          varS           tau 
+## -2.340000e+02  4.058333e+04 -9.425987e-02
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mk.test}\NormalTok{(Paul.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{72}\OperatorTok{:}\DecValTok{291}\NormalTok{]) }\CommentTok{#no trend}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Paul.mktest$absorbance[72:291]
+## z = 1.7089, n = 220, p-value = 0.08747
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+## 1.866000e+03 1.191044e+06 7.756263e-02
+\end{verbatim}
+
+\subsubsection{Tuesday Lake}\label{tuesday-lake}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Tuesday}
+\NormalTok{Tuesday.mktest <-}\StringTok{ }\KeywordTok{filter}\NormalTok{(carbon.data.processed.trimmed, lakename }\OperatorTok{==}\StringTok{ "Tuesday Lake"}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{na.omit}\NormalTok{()}
+
+\CommentTok{#run MK test}
+\KeywordTok{mk.test}\NormalTok{(Tuesday.mktest}\OperatorTok{$}\NormalTok{absorbance) }\CommentTok{#p is significant, so there is a significant positive trend from beginning to end of data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Tuesday.mktest$absorbance
+## z = 3.4932, n = 102, p-value = 0.0004773
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+## 1.209000e+03 1.195877e+05 2.353522e-01
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Test for change point}
+\KeywordTok{pettitt.test}\NormalTok{(Tuesday.mktest}\OperatorTok{$}\NormalTok{absorbance) }\CommentTok{#change point detected at place 68 2014-06-25}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pettitt's test for single change-point detection
+## 
+## data:  Tuesday.mktest$absorbance
+## U* = 1824, p-value = 1.626e-08
+## alternative hypothesis: two.sided
+## sample estimates:
+## probable change point at time K 
+##                              68
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#run second MK test for each change point range}
+\KeywordTok{mk.test}\NormalTok{(Tuesday.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{1}\OperatorTok{:}\DecValTok{67}\NormalTok{]) }\CommentTok{#p<0.05, significant negative trend in this range}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Tuesday.mktest$absorbance[1:67]
+## z = -3.3124, n = 67, p-value = 0.0009249
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##             S          varS           tau 
+##  -613.0000000 34135.6666667    -0.2780056
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#test for change point}
+\KeywordTok{pettitt.test}\NormalTok{(Tuesday.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{1}\OperatorTok{:}\DecValTok{67}\NormalTok{]) }\CommentTok{#change point detected at place 44 2012-08-22}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pettitt's test for single change-point detection
+## 
+## data:  Tuesday.mktest$absorbance[1:67]
+## U* = 712, p-value = 9.409e-05
+## alternative hypothesis: two.sided
+## sample estimates:
+## probable change point at time K 
+##                              44
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mk.test}\NormalTok{(Tuesday.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{1}\OperatorTok{:}\DecValTok{43}\NormalTok{]) }\CommentTok{#no trend}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Tuesday.mktest$absorbance[1:43]
+## z = 0.8898, n = 43, p-value = 0.3736
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+## 8.600000e+01 9.125333e+03 9.550287e-02
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mk.test}\NormalTok{(Tuesday.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{44}\OperatorTok{:}\DecValTok{67}\NormalTok{]) }\CommentTok{#no trend}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Tuesday.mktest$absorbance[44:67]
+## z = -0.62049, n = 24, p-value = 0.5349
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##             S          varS           tau 
+##  -26.00000000 1623.33333333   -0.09454608
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mk.test}\NormalTok{(Tuesday.mktest}\OperatorTok{$}\NormalTok{absorbance[}\DecValTok{68}\OperatorTok{:}\DecValTok{102}\NormalTok{]) }\CommentTok{#no trend}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Tuesday.mktest$absorbance[68:102]
+## z = 0.53976, n = 35, p-value = 0.5894
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+## 3.900000e+01 4.956333e+03 6.565666e-02
+\end{verbatim}
+
+\begin{figure}
+\centering
+\includegraphics{Bash_ENV872_Project_files/figure-latex/time-1.pdf}
+\caption{\label{fig:time} Absorbance in East Long Lake, West Long Lake,
+Peter Lake, Paul Lake, and Tuesday Lake over time}
+\end{figure}
+
+\begin{verbatim}
+## TableGrob (5 x 4) "arrange": 9 grobs
+##   z     cells    name                grob
+## 1 1 (2-3,2-3) arrange      gtable[layout]
+## 2 2 (2-2,4-4) arrange      gtable[layout]
+## 3 3 (3-3,4-4) arrange      gtable[layout]
+## 4 4 (4-4,2-2) arrange      gtable[layout]
+## 5 5 (4-4,3-3) arrange      gtable[layout]
+## 6 6 (4-4,4-4) arrange      gtable[layout]
+## 7 7 (1-1,2-4) arrange text[GRID.text.799]
+## 8 8 (5-5,2-4) arrange text[GRID.text.800]
+## 9 9 (1-5,1-1) arrange text[GRID.text.801]
+\end{verbatim}
 
 \newpage
 

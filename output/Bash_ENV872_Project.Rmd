@@ -4,10 +4,11 @@ output:
     keep_tex: yes
     fig_caption: yes
     number_sections: yes
-geometry: margin=2.54cm
+geometry: margin=2cm
 title: UV Absorbance characteristics in Northern Lakes
 subtitle: https://github.com/rachelbash/absorbance-data-project
 author: Rachel Bash
+date: April 16th, 2019
 abstract: "Experimental overview. This section should be no longer than 250 words. What contributes to absorbance values in the NTL_LTER Carbon data set (will consider things such as DIC, DOC, depth, and water pressure). Also, is there a significant change in absorbance values in lakes over time?"
 fontsize: 12pt
 mainfont: Times New Roman
@@ -57,9 +58,14 @@ carbon.data <- read.csv("./raw-data/NTL-LTER_Lake_Carbon_Raw.csv")
 
 # Research Question and Rationale
 
-Absorbance is a unitless measurement that describes how much a substance absorbs light over a certain range of wavelenght. The absorbance values of water samples from lakes can provide details regarding its physical characteristics and the health of the lake. The amount of light entering a lake is an component that drives photosynthesis and lake metabolism. Additionally, lake temperature and its absorbance characteristics are deeply intertwined. With the right equipment, absorbance is fairly easy to measure. Therefore, measuring absorbance in lakes can give researchers insight into other processes happening that depend on sunlight. 
+Absorbance is a unit-less measurement that describes how much a substance can absorb light over a certain range of wavelength. The absorbance values of water samples from lakes can provide details regarding its physical characteristics and the health of the lake. The amount of light entering a lake is a component that drives photosynthesis and lake metabolism. Additionally, lake temperature and its absorbance characteristics are deeply intertwined. With the right equipment, absorbance is fairly easy to measure. Therefore, measuring absorbance in lakes can give researchers insight into other processes happening that depend in part on sunlight, such as algal growth or temperature-dependent processes. 
 
-This research project intends to answer two main questions: What contributes to absorbance values in five lakes located in Michigan's Upper Penninsula? Do absorbance values in these five study lakes change over time? The data that  answer these questions come from the North Temperate Lakes Project, which seeks to measure data on carbon and other related variables in lakes. My analysis of the data provides a model that shows the variables that best predict absorbance values and also takes a closer look at how absorbance values have changed over time in different lakes. Time variations in absorbance have implications that other physical characteristics are changing, which may damage  biota in the lakes or bring about significant changes in the greater ecosystem that surrounds the lake.
+This research project intends to answer two main questions: 
+
+* What contributes to absorbance values in five lakes located in Michigan's Upper Peninsula? 
+* Do absorbance values in these five study lakes change over time? 
+
+The data that  answer these questions come from the North Temperate Lakes Project, which seeks to measure data on carbon and other related variables in lakes. My analysis of the data provides a model that shows the variables that best predict absorbance values and also takes a closer look at how absorbance values have changed over time in different lakes. Time variations in absorbance have implications that other physical characteristics are changing, which may damage  biota in the lakes or bring about significant changes in the greater ecosystem that surrounds the lake.
 
 <Paragraph detailing the rationale for your analysis. What is the significant application and/or interest in this topic? Connect to environmental topic(s)/challenge(s).>
 
@@ -73,7 +79,7 @@ This research project intends to answer two main questions: What contributes to 
 
 <Add a table that summarizes your data structure. This table can be made in markdown text or inserted as a `kable` function in an R chunk. If the latter, do not include the code used to generate your table.>
 
-The dataset was collected from 1984 to 2016 by researchers working for the Cascade Project and Northern Temperate Lakes at a total of 14 sites. Samples of water were collected, and then were measured. Measurements included dissolved organic and inorganic carbon, particulate organic matter, partial pressure of carbon dioxide, and absorbance. Absorbance was measured using a spectrophotometer at a wavelength of 440nm. 
+The dataset was collected from 1984 to 2016 by researchers working for the Cascade Project and Northern Temperate Lakes at a total of 14 sites. Samples of water were collected, and then were measured. Measurements included dissolved organic and inorganic carbon, particulate organic matter, partial pressure of carbon dioxide, and absorbance. Absorbance was measured using a spectrophotometer at a wavelength of 440nanometers. 
 
 For some variables, a water depth sample was taken that was measured in meters, while in others, samples were taken to reflect a depth that was proportional across all lakes. Therefore, Hypolimnion, Epilimnion, Metalimnion, and pooled mixed layer (PML) are also included as depth values. All water samples were taken with a syringe and then filtered through a mesh filter in order to remove any large debris or zooplankton.
 
@@ -81,7 +87,7 @@ Data Summary        | Relevant Information
 ------------------- | ----------------------
 Date range          | 1984-06-03 to 2016-08-17
 Structure           | 15 variables with 13,557 observations
-Column names        | lakeid, lakename, year4, daynum, sampledate, depth, depth_id, tpc,    tpn, DIC_mg, DIC_uM, air_pco2, water_pco2, doc, absorbance
+Column variables    | Lake ID, Lake Name, Year, Day No., Date, Depth, Depth ID, TPC, TPC, DIC, PCO2 air, PCO2 water, DOC, Absorbance
 Lakes sampled       | Crampton Lake, East Long Lake, Hummingbird Lake, Long Lake, Morris Lake, North Gate Bog, Paul Lake, Peter Lake, Reddington Lake, Roach Lake, Tender Bog, Tuesday Lake, Ward Lake, West Long Lake
 
 ```{r, include=FALSE}
@@ -103,10 +109,10 @@ head(carbon.data$sampledate)
 
 <Include text sections to accompany these R chunks to explain the reasoning behind your workflow, and the rationale for your approach.>
 
-####Importing raw data and identifying its attributes
+##Importing raw data and identifying its attributes
 
 ```{r}
-#exploratory code to see the full dataset and its attributes
+
 colnames(carbon.data)
 str(carbon.data)
 summary(carbon.data)
@@ -118,7 +124,7 @@ head(carbon.data$depth, 10)
 
 These exploratory commands above function as helpful tools that help me see what kind of shape my data are in. It shows me how many NA's I have, what variables I am working with, the classes of my variables, and basic summary statistics. An important thing I discovered while doing the initial exploratory data analysis is that the depth variable has both numeric and factor-level observations, which is why its class is listed as `factor`. In other words, depth was measured in both numeric terms (1 meter, 13 meters, etc), but also in thermally stratified terms, such as Hypolimnion, Metalimnion, and Epilimnion. This was an important discovery that led to further data wrangling and filtering of this specific variable.
 
-####Visualizing the data
+##Visualizing the data
 
 As seen by \autoref{fig:foo}, Absorbance values are not normally distributed. This is expected, as we are dealing with ecological data.
 
@@ -137,7 +143,7 @@ ggplot(carbon.data) +
 ```
 
 
-Relatedly, \autoref{fig:freqpol} shows that different levels of depth (factor) had difference absorbance freqency values. It was helpful to create this graph to show that absorbance was measured at multiple different water depth levels.
+Similarly, \autoref{fig:freqpol} shows that different levels of depth (factor) had difference absorbance frequency values. It was helpful to create this graph to show that absorbance was measured at multiple different water depth levels.
 
 
 ```{r absorbdoc, echo=FALSE, fig.cap="\\label{fig:absorbdoc} Disolved organic carbon and absorbance relationship by year"}
@@ -147,6 +153,30 @@ ggplot(carbon.data) +
   labs(x="Absorbance", y="Dissolved Organic Carbon, mg/L", color="Year")
 ```
 
+ \autoref{fig:absorbdoc} shows a positive relationship between dissolved organic carbon and absorbance, with a layer of color by year. This result is expected, and it gave me a good sense of what to expect during my analysis portion of the project. It is interesting to note that as time went on, measures for both absorbance and for DOC began to shrink to smaller values, as seen with the color gradient by year.
+ 
+##Data Wrangling
+```{r}
+carbon.data.processed <- carbon.data %>%
+  filter(depth %in% c("PML", "Hypolimnion", "Epilimnion", "Metalimnion")) %>%
+  filter(lakename %in% c("Peter Lake", "Paul Lake", "East Long Lake", "Tuesday Lake", "West Long Lake")) %>%
+  select(lakename:depth_id, DIC_mg, doc, absorbance, tpc)
+
+```
+ 
+There were many things to consider when wrangling my data to a more manageable and workable dataset. I noticed that all absorbance values had associated depth measurements using only the thermally stratified depth categories. Therefore, I filtered out any depth that was measured in meters, in order to simplify the process. Next, I chose the five lakes in the dataset that had the most number of data points. Shortening the lake list from 14 to 5 gives the research project a more focused view and potentially stronger relationships among variables. Lastly, I selected only the columns that I wanted to study and that could be analyzed in relation to absorbance values. These variables included lake name, depth, dissolved inorganic carbon, dissolved organic carbon, total particulate carbon, and absorbance.
+
+##Correlation between continuous variables
+```{r corr, echo=FALSE, fig.cap="\\label{fig:corr} Correlation plot between continuous variables"}
+carbon.data.processed.naomit <- carbon.data.processed %>% 
+  select(DIC_mg:tpc) %>%
+  na.omit()
+
+carbonCorr <- cor(carbon.data.processed.naomit)
+corrplot.mixed(carbonCorr, upper = "ellipse")
+```
+
+The last piece of data exploration I completed was visualizing the correlation between the continuous variables in the data. \autoref{fig:corr} illustrates the relationships between each of the continuous variables in question. All relationship correlations range pretty low to moderate, with DOC and absorbance having the lowest correlation coefficient of -0.12, and DIC and DOC having the highest negative correlation coefficient of -0.58. It is important to consider this visualization critically, as the data have been thoroughly at this point, leaving much fewer data points than what we started with, which could manipulate the strength (or weakness) of these correlation coefficients.
 
 
 \newpage
@@ -156,7 +186,290 @@ ggplot(carbon.data) +
 
 <Include text sections to accompany these R chunks to explain the reasoning behind your workflow, rationale for your approach, and the justification of meeting or failing to meet assumptions of tests.>
 
+##Differences in absorbance values across lakes
+
+It was important for me to know whether absorbance values were significantly different across the five lakes of interest. This can be answered by a simple ANOVA test. However, the data must meet certain criteria. Fist, data had to be normally distributed, and second, equal variance across groups must exist. I tested these assumptions using the Shapiro test and the Bartlett test, respectively. Both tests resulted in significant p-values, indicating that the data fail the tests for normality and equal variances. 
+
+Therefore, another method had to be utilized. I opted for a non-parametric test called the Kruskal Wallis test, a great alternative to ANOVAs. Here, I received a significant p-value result, indicating that there is a significant difference in absorbance values across different lakes. A non-parametric post-hoc test (Dunn Test) reveals that all lakes' mean absorbances values are significantly different from all other lakes (p-values < 0.05). \autoref{fig:violin} illustrates how absorbance values vary vastly by lake. Even though all of these lakes are located close to each other in Michigan's Upper Peninsula along the Wisconsin border, it is clear that absorbance values can vary greatly among them.
+
+
+```{r}
+# test for normality
+shapiro.test(carbon.data.processed$absorbance
+             [carbon.data.processed$lakename == "Tuesday Lake"])
+shapiro.test(carbon.data.processed$absorbance
+             [carbon.data.processed$lakename == "Paul Lake"])
+shapiro.test(carbon.data.processed$absorbance
+             [carbon.data.processed$lakename == "Peter Lake"])
+shapiro.test(carbon.data.processed$absorbance
+             [carbon.data.processed$lakename == "East Long Lake"])
+shapiro.test(carbon.data.processed$absorbance
+             [carbon.data.processed$lakename == "West Long Lake"])
+#result: all have significant p-values, meaning they are not normally distributed data 
+
+#bartlett test to determine whether there is equal variance between groups
+bartlett.test(carbon.data.processed$absorbance ~ carbon.data.processed$lakename) 
+#result: significant p-value, not equal variances
+
+#non-parametric test instead
+kruskal.test(carbon.data.processed$absorbance ~ carbon.data.processed$lakename)
+#lakename is a significant predictor of absorbance
+
+#post-hoc non-parametric test
+dunnTest(carbon.data.processed$absorbance ~ carbon.data.processed$lakename) 
+#shows all lakes differ from one another significantly 
+```
+
+
  
+```{r violin, echo=FALSE, fig.cap="\\label{fig:violin} Absorbance differences by lake"}
+ggplot(carbon.data.processed, aes(x=lakename, y = absorbance, color=lakename)) +
+  geom_violin(draw_quantiles = 0.5) +
+  labs(x="Lake Names", y="Absorbance Distribution") +
+  theme(axis.text.x = element_text(angle = 45,  hjust = 1), axis.text = element_text(size=10),  legend.title = element_blank(), legend.position="none") +
+  scale_color_manual(values = c("#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#0c2c84"), 
+                   breaks = c("East Long Lake", "Peter Lake", "Paul Lake", "Tuesday Lake", "West Long Lake"))
+```
+\newpage
+
+##Linear regression model
+
+In order to determine what factors contribute to absorbance values, I conducted a step-wise linear regression model. I was not able to include DIC in the full model, because DIC was only measured at numeric depths and not thermally stratified depths. Therefore, no data between absorbance and DIC overlapped. The full model included the following parameters: depth, DOC, Lake Name, and Total Particulate Carbon. 
+
+By performing a step-wise linear regression model, I can use the lowest Akaike's Information Criterion (AIC) value to determine the ideal statistical model that balances both simplicity and statistical power. The regression analysis showed that all variables are significant and allow us to best predict absorbance values. The resulting linear expression is as follows:
+
+$$Absorbance = 0.18(Epi*East) + 0.17(Hypo) + 0.02(DOC) -$$ 
+$$0.18(Paul)  - 0.24(Peter) - 0.23(Tuesday) - 0.19(West) + 0.02(TPC) $$
+For example, for every one unit increase in DOC, absorbance value increases by 0.02 units. Alternatively, if absorbance is measured in Peter Lake, absorbance will decrease by 0.24 units. The step function shows that all variables, except for Metalimnion and PML depth categories were significant predictors of absorbance, and the full model had an adjusted R-squared value of 0.86, which is quite significant. However, it is important to note that because of missing values within each of the variables, there is an exceptionally high degrees of freedom value of 1119. 
+
+ \autoref{fig:linreg} illustrates all predictors, with the exception of lake name, and their relationship to absorbance. 
+ 
+```{r}
+#Step-wise linear regression
+
+steplm <- lm(data=carbon.data.processed, absorbance ~ depth + doc  + lakename + tpc)
+step(steplm) 
+#taking out none would result in the lowest AIC value
+
+#full-model is the best, as shown by the step 
+fullmodel <- lm(data=carbon.data.processed, absorbance ~ depth + doc  + lakename + tpc)
+summary(fullmodel)
+```
+
+```{r linreg, echo=FALSE, fig.cap="\\label{fig:linreg}Facet plot of absorbance by TPC, DOC, and Depth"}
+
+ggplot(carbon.data.processed, aes(x=tpc, y=absorbance)) +
+         geom_point(aes(color=doc), alpha = 0.5) +
+         facet_wrap(vars(depth)) +
+         theme(axis.text.x = element_text(angle = 45, hjust = 1), strip.text.x=element_text(size = 9)) +
+         scale_color_viridis(option="viridis", direction = -1) +
+         xlim(0,5) +
+  labs(x = "Total Particulate Carbon", y = "Absorbance", color = "DOC")
+
+```
+\newpage
+
+
+##Time Series Analysis
+
+A time series analysis will show whether absorbance values in lakes have changed over time. I used a Mann Kendall test to determine whether there is a monotonic overall trend in absorbance over time for the five lakes of interest. While there is perhaps seasonality differences in absorbance values, I am only interested in yearly trends, and so have decided not to look at seasonal differences of absorbance.  
+
+```{r}
+#trimming data to only look at points of interest
+carbon.data.processed.trimmed <- carbon.data.processed %>%
+  filter(depth == "Hypolimnion") %>%
+  select(absorbance, sampledate, lakename) %>%
+  filter(sampledate > as.Date("1996-06-01") & sampledate < as.Date("2016-08-17"))
+
+```
+
+
+### East Long Lake
+
+```{r}
+#East Lake
+East.mktest <- filter(carbon.data.processed.trimmed, lakename == "East Long Lake")
+
+#run MK test
+mk.test(East.mktest$absorbance) #p=2e-9, so there is a significant negative trend from beginning to end of data
+
+# Test for change point
+pettitt.test(East.mktest$absorbance) #change point detected at place 30 1998-05-28
+
+#run second MK test for each change point range
+mk.test(East.mktest$absorbance[1:29]) #p=1e-5, significant positive trend in this range
+#test for change point
+pettitt.test(East.mktest$absorbance[1:29]) #change point detected at place 17 1997-06-12
+mk.test(East.mktest$absorbance[1:16]) #no trend
+mk.test(East.mktest$absorbance[17:29]) #no trend
+
+mk.test(East.mktest$absorbance[30:73]) #significant negative trend over time
+pettitt.test(East.mktest$absorbance[30:73]) #change point detected at place 17 (which means place 47 - 1999-06-09)
+mk.test(East.mktest$absorbance[30:46]) #no trend
+mk.test(East.mktest$absorbance[47:73]) #no trend
+
+
+```
+
+###West Long Lake
+
+```{r}
+#split data by lake
+West.mktest <- filter(carbon.data.processed.trimmed, lakename == "West Long Lake")
+
+#run MK test
+mk.test(West.mktest$absorbance) #p is significant, so there is a significant negative trend from beginning to end of data
+
+# Test for change point
+pettitt.test(West.mktest$absorbance) #change point detected at place 44 1998-08-31
+
+#run second MK test for each change point range
+mk.test(West.mktest$absorbance[1:43]) #no trend
+
+mk.test(West.mktest$absorbance[44:87]) #no significant trend in this range
+
+  
+```
+
+
+###Peter Lake
+
+```{r}
+#Peter Lake
+Peter.mktest <- filter(carbon.data.processed.trimmed, lakename == "Peter Lake") %>% na.omit()
+
+#run MK test
+mk.test(Peter.mktest$absorbance) #p val is significant so there is a significant positive trend from beginning to end of data
+
+# Test for change point
+pettitt.test(Peter.mktest$absorbance) #change point detected at place 202 2011-06-06
+
+#run second MK test for each change point range
+mk.test(Peter.mktest$absorbance[1:201]) #p>0.05, no significant trend in this date range
+
+mk.test(Peter.mktest$absorbance[202:287]) #significant positive trend over time
+pettitt.test(Peter.mktest$absorbance[202:287]) #change point detected at place 50 (which means place 50+202=252 - 2014-06-30)
+mk.test(Peter.mktest$absorbance[202:251]) #no trend
+mk.test(Peter.mktest$absorbance[252:287]) #no trend
+
+```
+
+
+###Paul Lake
+
+```{r}
+#Paul Lake
+Paul.mktest <- filter(carbon.data.processed.trimmed, lakename == "Paul Lake") %>% na.omit()
+
+#run MK test
+mk.test(Paul.mktest$absorbance) #p>0.05 so no significant over time
+
+# Test for change point
+pettitt.test(Paul.mktest$absorbance) #change point detected at place 72 2001-08-20
+
+#run second MK test for each change point range
+mk.test(Paul.mktest$absorbance[1:71]) #no trend
+
+mk.test(Paul.mktest$absorbance[72:291]) #no trend
+
+
+```
+
+###Tuesday Lake
+
+
+```{r}
+#Tuesday
+Tuesday.mktest <- filter(carbon.data.processed.trimmed, lakename == "Tuesday Lake") %>% na.omit()
+
+#run MK test
+mk.test(Tuesday.mktest$absorbance) #p is significant, so there is a significant positive trend from beginning to end of data
+
+# Test for change point
+pettitt.test(Tuesday.mktest$absorbance) #change point detected at place 68 2014-06-25
+
+#run second MK test for each change point range
+mk.test(Tuesday.mktest$absorbance[1:67]) #p<0.05, significant negative trend in this range
+#test for change point
+pettitt.test(Tuesday.mktest$absorbance[1:67]) #change point detected at place 44 2012-08-22
+mk.test(Tuesday.mktest$absorbance[1:43]) #no trend
+mk.test(Tuesday.mktest$absorbance[44:67]) #no trend
+
+mk.test(Tuesday.mktest$absorbance[68:102]) #no trend
+
+
+```
+
+
+```{r time, echo=FALSE, fig.cap="\\label{fig:time} Absorbance in East Long Lake, West Long Lake, Peter Lake, Paul Lake, and Tuesday Lake over time", fig.height=7, fig.width=9}
+#East
+East <- ggplot(East.mktest, aes(x=sampledate, y=absorbance)) +
+  geom_point(color="#7fcdbb") +
+  geom_vline(xintercept=as.Date("1997-06-12")) +
+  geom_vline(xintercept=as.Date("1999-06-09")) +
+  geom_vline(xintercept = as.Date("1998-05-28")) +
+  geom_smooth(method=lm, color="black") +
+  theme(axis.title.x=element_blank(), axis.title.y=element_blank(), plot.title=element_text(hjust=0.5)) +
+  labs(title="East Long Lake")
+
+
+#West
+West <- ggplot(West.mktest, aes(x=sampledate, y=absorbance)) +
+  geom_point(color = "#0c2c84") +
+  geom_vline(xintercept=as.Date("1998-08-31")) +
+  geom_smooth(method=lm, color = "black") +
+  theme(axis.title.x=element_blank(), axis.title.y=element_blank(), plot.title=element_text(hjust=0.5)) +
+  labs(title="West Long Lake")
+  
+
+#peter
+Peter <- ggplot(Peter.mktest, aes(x=sampledate, y=absorbance)) +
+  geom_point(color="#1d91c0") +
+  geom_vline(xintercept=as.Date("2014-06-30")) +
+  geom_vline(xintercept=as.Date("2011-06-06")) +
+  geom_smooth(method=lm, color="red") +
+  theme(axis.title.x=element_blank(), axis.title.y=element_blank(), plot.title=element_text(hjust=0.5)) +
+  labs(title="Peter Lake")
+
+
+#paul
+Paul <- ggplot(Paul.mktest, aes(x=sampledate, y=absorbance)) +
+  geom_point(color="#41b6c4") +
+  geom_vline(xintercept=as.Date("2001-08-20")) +
+  geom_smooth(method=lm, color="black") +
+  theme(axis.title.x=element_blank(), axis.title.y=element_blank(), plot.title=element_text(hjust=0.5)) +
+  labs(title="Paul Lake*")
+
+
+#Tuesday
+Tuesday <- ggplot(Tuesday.mktest, aes(x=sampledate, y=absorbance)) +
+  geom_point(color="#225ea8") +
+  geom_vline(xintercept=as.Date("2014-06-25")) +
+  geom_vline(xintercept=as.Date("2012-08-22")) +
+  geom_smooth(method=lm, color="red") +
+  theme(axis.title.x=element_blank(), axis.title.y=element_blank(), plot.title=element_text(hjust=0.5)) +
+  labs(title="Tuesday Lake")
+
+
+#ALL
+All <- ggplot(carbon.data.processed.trimmed, aes(x=sampledate, y = absorbance, color=lakename)) +
+  geom_point(aes(color=lakename), size = 2) + theme(legend.position="top", legend.title = element_blank(), legend.text=element_text(size=10)) +
+  theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
+  scale_color_manual(values = c("#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#0c2c84"), 
+                   breaks = c("East Long Lake", "Peter Lake", "Paul Lake", "Tuesday Lake", "West Long Lake"), 
+                   labels = c("East Long Lake", "Peter Lake", "Paul Lake", "Tuesday Lake", "West Long Lake"))
+#All
+
+#PUT EVERYTHING TOGETHER!
+Absorbance.figure <- grid.arrange(All, East, West, Tuesday, Peter, Paul, ncol=3, nrow=3, 
+             layout_matrix = rbind(c(1, 1, 2),
+                                   c(1, 1, 3),
+                                   c(4, 5, 6)), 
+            top=textGrob("Absorbance over Time", gp=gpar(fontsize=20)), bottom = "Date", 
+            left = "Absorbance")
+Absorbance.figure
+
+```
 
 
 \newpage
